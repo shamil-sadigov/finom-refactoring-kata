@@ -1,24 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
 using ReportService.Domain;
+using ReportService.Services;
 
 namespace ReportService.Controllers
 {
     [Route("api/[controller]")]
     public class ReportController : Controller
     {
+        private readonly IEmployeeSalaryProvider _salaryProvider;
+
+        public ReportController(IEmployeeSalaryProvider salaryProvider)
+        {
+            _salaryProvider = salaryProvider;
+        }
+        
+        
         // TODO: Стоит вынести логику логику построения отчетов в отдельный модуль
         // TODO: Почему бы нам не кешировать отчеты которые мы уже генерили ранее ? Хмм ? Хммм ?
         // TODO: Не нужно ли подумать о локализации отчетов ?
         [HttpGet]
         [Route("{year}/{month}")]
-        public IActionResult Download(int year, int month)
+        public async Task<IActionResult> Download(int year, int month)
         {
             // TODO: Заменить синхронные вызовы на асинхронный везде где возможно
             
@@ -56,7 +64,7 @@ namespace ReportService.Controllers
                     // TODO: Не нужно блокировать поток
                     // TODO: Стоит абстрагироваться от EmpCodeResolver ради decreased coupling + тестирование
                     emp.BuhCode = EmpCodeResolver.GetCode(emp.Inn).Result;
-                    emp.Salary = emp.Salary(); 
+                    emp.Salary = await _salaryProvider.GetSalaryAsync(emp, CancellationToken.None); 
                     
                     // TODO: Давайте не будем так делать
                     if (emp.Department != depName)
