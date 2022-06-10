@@ -38,9 +38,6 @@ namespace ReportService.Controllers
             const string connString = "Host=192.168.99.100;Username=postgres;Password=1;Database=employee";
             
             // TODO: Стоит абстрагироваться от NG + зарегистрировать в DI контейнере и позаботиться о Dispose
-            var conn = new NpgsqlConnection(connString);
-            
-            await conn.OpenAsync(cancellationToken);
             
             List<Employee> emplist = new List<Employee>();
             var sqlConnection = new NpgsqlConnection(connString);
