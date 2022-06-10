@@ -1,22 +1,12 @@
 ﻿using System;
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using ReportService.Domain;
 
 namespace ReportService.Services
 {
-    // TODO: Use record instead of class when switching to .NET 5
-    public class GetEmployeeSalaryRequest
-    {
-        public GetEmployeeSalaryRequest(string buhCode)
-        {
-            BuhCode = buhCode;
-        }
-
-        public string BuhCode { get; set; }
-    }
-    
     public class EmployeeSalaryProvider : IEmployeeSalaryProvider
     {
         private readonly HttpClient _httpClient;
@@ -34,20 +24,14 @@ namespace ReportService.Services
         {
             var request = new GetEmployeeSalaryRequest(employee.BuhCode);
             
-            // TODO: Стоит перейти yf .NET 5 ибо там не нужны все эти танцы для того чтобы сделать Post запрос, 
-            
-            var jsonContent = new StringContent(request.ToJson());
-
-            var response = await _httpClient.PostAsync("/api/empcode/" + employee.Inn, jsonContent, token);
+            var response = await _httpClient.PostAsJsonAsync("/api/empcode/" + employee.Inn, request, token);
 
             response.EnsureSuccessStatusCode();
 
-            var salaryString = await response.Content.ReadAsStringAsync();
+            var salaryString = await response.Content.ReadAsStringAsync(token);
             
             if (!int.TryParse(salaryString, out var parsedSalary))
-            {
                 throw new InvalidOperationException("Returned salary has invalid format");
-            }
 
             return parsedSalary;
         }
