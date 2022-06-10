@@ -39,14 +39,13 @@ namespace ReportService.Controllers
             
             // TODO: Стоит абстрагироваться от NG + зарегистрировать в DI контейнере и позаботиться о Dispose
             
-            List<Employee> emplist = new List<Employee>();
             var sqlConnection = new NpgsqlConnection(connString);
             
             await sqlConnection.OpenAsync(cancellationToken);
             
             // TODO: Check how dapper mapping behaves in case of missing marching columns
             
-            IEnumerable<Employee> employees = await GetEmployeesFromDbAsync(sqlConnection);
+            List<Employee> employees = await GetEmployeesFromDbAsync(sqlConnection);
             
             foreach (var employee in employees)
             {
@@ -59,9 +58,9 @@ namespace ReportService.Controllers
             actions.Add((new ReportFormatter(null).NL, new Employee()));
             actions.Add((new ReportFormatter(null).WL, new Employee()));
             actions.Add((new ReportFormatter(null).NL, new Employee()));
-            actions.Add((new ReportFormatter(null).WD, new Employee() { Department = depName } ));
+            // actions.Add((new ReportFormatter(null).WD, new Employee() { Department = depName } ));
             
-            for (int i = 1; i < emplist.Count(); i ++)
+            for (int i = 1; i < employees.Count(); i ++)
             {
                 actions.Add((new ReportFormatter(emplist[i]).NL, emplist[i]));
                 actions.Add((new ReportFormatter(emplist[i]).WE, emplist[i]));
@@ -83,15 +82,17 @@ namespace ReportService.Controllers
             return response;
         }
 
-        private static async Task<IEnumerable<Employee>> GetEmployeesFromDbAsync(NpgsqlConnection sqlConnection)
+        private static async Task<List<Employee>> GetEmployeesFromDbAsync(NpgsqlConnection sqlConnection)
         {
-            return await sqlConnection.QueryAsync<Employee>(
+            var employees =  await sqlConnection.QueryAsync<Employee>(
                 @"SELECT employees.name AS Name, 
                          employees.inn AS Inn, 
                          departments.name AS Department,
                   FROM employees
                   LEFT JOIN departments ON employees.departmentid = departments.id
                   WHERE departments.active = true");
+
+            return employees.ToList();
         }
     }
 }
