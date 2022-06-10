@@ -52,7 +52,7 @@ namespace ReportService.Controllers
             {
                 // TODO: Не нужно блокировать поток
                 // TODO: Стоит абстрагироваться от EmpCodeResolver ради decreased coupling + тестирование
-                employee.BuhCode = EmpCodeResolver.GetCode(employee.Inn).Result;
+                employee.BuhCode = await EmpCodeResolver.GetCodeAsync(employee.Inn);
                 employee.Salary = await _salaryProvider.GetSalaryAsync(employee, CancellationToken.None); 
             }
             
