@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BusinessLogic.Contracts.Payroll
+namespace ReportService.Domain
 {
     public class EmployeeInPayroll : PayrollEmployee
     {

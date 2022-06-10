@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace BusinessLogic.Contracts.Payroll
+namespace ReportService.Domain
 {
     public class PayrollInLayer
     {
