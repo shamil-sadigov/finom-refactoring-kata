@@ -27,7 +27,7 @@ namespace ReportService.Controllers
         // TODO: Не нужно ли подумать о локализации отчетов ?
         [HttpGet]
         [Route("{year}/{month}")]
-        public async Task<IActionResult> Download(int year, int month)
+        public async Task<IActionResult> Download(int year, int month, CancellationToken cancellationToken)
         {
             // TODO: Заменить синхронные вызовы на асинхронный везде где возможно
             
@@ -40,12 +40,12 @@ namespace ReportService.Controllers
             // TODO: Стоит абстрагироваться от NG + зарегистрировать в DI контейнере и позаботиться о Dispose
             var conn = new NpgsqlConnection(connString);
             
-            conn.Open();
+            await conn.OpenAsync(cancellationToken);
             
             List<Employee> emplist = new List<Employee>();
             var sqlConnection = new NpgsqlConnection(connString);
             
-            sqlConnection.Open();
+            await sqlConnection.OpenAsync(cancellationToken);
             
             // TODO: Check how dapper mapping behaves in case of missing marching columns
             
@@ -81,7 +81,7 @@ namespace ReportService.Controllers
             }
             report.Save();
             
-            var file = System.IO.File.ReadAllBytes("D:\\report.txt");
+            var file = await System.IO.File.ReadAllBytesAsync("D:\\report.txt", cancellationToken);
             var response = File(file, "application/octet-stream", "report.txt");
             return response;
         }
