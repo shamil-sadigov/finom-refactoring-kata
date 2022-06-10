@@ -35,4 +35,10 @@
     </Reference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Include="..\..\TODO.md">
+      <Link>TODO.md</Link>
+    </Content>
+  </ItemGroup>
+
 </Project>
