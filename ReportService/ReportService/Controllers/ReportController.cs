@@ -42,17 +42,18 @@ namespace ReportService.Controllers
             conn.Open();
             
             List<Employee> emplist = new List<Employee>();
-            var conn1 = new NpgsqlConnection(connString);
-            conn1.Open();
-            var cmd1 = new NpgsqlCommand(
+            var sqlConnection = new NpgsqlConnection(connString);
+            sqlConnection.Open();
+            
+            var sqlCommand = new NpgsqlCommand(
                 @"SELECT employees.name, 
                          employees.inn, 
                          departments.name 
                   FROM employees
                   LEFT JOIN departments ON employees.departmentid = departments.id
-                  WHERE departments.active = true", conn1);
+                  WHERE departments.active = true", sqlConnection);
                 
-            var reader1 = cmd1.ExecuteReader();
+            var reader1 = sqlCommand.ExecuteReader();
             while (reader1.Read())
             {
                 var emp = new Employee()
