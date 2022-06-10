@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Dapper;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
 using ReportService.Domain;
@@ -43,33 +44,21 @@ namespace ReportService.Controllers
             
             List<Employee> emplist = new List<Employee>();
             var sqlConnection = new NpgsqlConnection(connString);
+            
             sqlConnection.Open();
             
-            var sqlCommand = new NpgsqlCommand(
-                @"SELECT employees.name, 
-                         employees.inn, 
-                         departments.name 
-                  FROM employees
-                  LEFT JOIN departments ON employees.departmentid = departments.id
-                  WHERE departments.active = true", sqlConnection);
-                
-            var reader1 = sqlCommand.ExecuteReader();
-            while (reader1.Read())
+            // TODO: Check how dapper mapping behaves in case of missing marching columns
+            
+            IEnumerable<Employee> employees = await GetEmployeesFromDbAsync(sqlConnection);
+            
+            foreach (var employee in employees)
             {
-                var emp = new Employee()
-                {
-                    Name = reader1.GetString(0), 
-                    Inn = reader1.GetString(1), 
-                    Department = reader1.GetString(2)
-                };
                 // TODO: Не нужно блокировать поток
                 // TODO: Стоит абстрагироваться от EmpCodeResolver ради decreased coupling + тестирование
-                emp.BuhCode = EmpCodeResolver.GetCode(emp.Inn).Result;
-                emp.Salary = await _salaryProvider.GetSalaryAsync(emp, CancellationToken.None); 
-                
-                emplist.Add(emp);
+                employee.BuhCode = EmpCodeResolver.GetCode(employee.Inn).Result;
+                employee.Salary = await _salaryProvider.GetSalaryAsync(employee, CancellationToken.None); 
             }
-
+            
             actions.Add((new ReportFormatter(null).NL, new Employee()));
             actions.Add((new ReportFormatter(null).WL, new Employee()));
             actions.Add((new ReportFormatter(null).NL, new Employee()));
@@ -95,6 +84,17 @@ namespace ReportService.Controllers
             var file = System.IO.File.ReadAllBytes("D:\\report.txt");
             var response = File(file, "application/octet-stream", "report.txt");
             return response;
+        }
+
+        private static async Task<IEnumerable<Employee>> GetEmployeesFromDbAsync(NpgsqlConnection sqlConnection)
+        {
+            return await sqlConnection.QueryAsync<Employee>(
+                @"SELECT employees.name AS Name, 
+                         employees.inn AS Inn, 
+                         departments.name AS Department,
+                  FROM employees
+                  LEFT JOIN departments ON employees.departmentid = departments.id
+                  WHERE departments.active = true");
         }
     }
 }
