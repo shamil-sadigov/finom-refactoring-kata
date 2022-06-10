@@ -31,8 +31,8 @@ namespace ReportService.Controllers
         {
             // TODO: Заменить синхронные вызовы на асинхронный везде где возможно
             
-            var actions = new List<(Action<Employee, Report>, Employee)>();
-            var report = new Report() { S = MonthNameResolver.MonthName.GetName(year, month) };
+            // var actions = new List<(Action<Employee, Report>, Employee)>();
+            var report = new Report() { Content = MonthNameResolver.MonthName.GetName(year, month) };
             
             // TODO: Вынести в appsettings
             const string connString = "Host=192.168.99.100;Username=postgres;Password=1;Database=employee";
@@ -55,26 +55,27 @@ namespace ReportService.Controllers
                 employee.Salary = await _salaryProvider.GetSalaryAsync(employee, CancellationToken.None); 
             }
             
-            actions.Add((new ReportFormatter(null).NL, new Employee()));
-            actions.Add((new ReportFormatter(null).WL, new Employee()));
-            actions.Add((new ReportFormatter(null).NL, new Employee()));
+            // actions.Add((new ReportFormatter(null).NL, new Employee()));
+            // actions.Add((new ReportFormatter(null).WL, new Employee()));
+            // actions.Add((new ReportFormatter(null).NL, new Employee()));
             // actions.Add((new ReportFormatter(null).WD, new Employee() { Department = depName } ));
             
             for (int i = 1; i < employees.Count(); i ++)
             {
-                actions.Add((new ReportFormatter(emplist[i]).NL, emplist[i]));
-                actions.Add((new ReportFormatter(emplist[i]).WE, emplist[i]));
-                actions.Add((new ReportFormatter(emplist[i]).WT, emplist[i]));
-                actions.Add((new ReportFormatter(emplist[i]).WS, emplist[i]));
+                // actions.Add((new ReportFormatter(emplist[i]).NL, emplist[i]));
+                // actions.Add((new ReportFormatter(emplist[i]).WE, emplist[i]));
+                // actions.Add((new ReportFormatter(emplist[i]).WT, emplist[i]));
+                // actions.Add((new ReportFormatter(emplist[i]).WS, emplist[i]));
             }  
                 
-            actions.Add((new ReportFormatter(null).NL, null));
-            actions.Add((new ReportFormatter(null).WL, null));
+            // actions.Add((new ReportFormatter(null).NL, null));
+            // actions.Add((new ReportFormatter(null).WL, null));
 
-            foreach (var act in actions)
-            {
-                act.Item1(act.Item2, report);
-            }
+            // foreach (var act in actions)
+            // {
+            //     act.Item1(act.Item2, report);
+            // }
+            //
             report.Save();
             
             var file = await System.IO.File.ReadAllBytesAsync("D:\\report.txt", cancellationToken);
