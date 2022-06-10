@@ -13,16 +13,28 @@ namespace ReportService.Controllers
     [Route("api/[controller]")]
     public class ReportController : Controller
     {
+        // TODO: Стоит вынести логику логику построения отчетов в отдельный модуль
+        // TODO: Почему бы нам не кешировать отчеты которые мы уже генерили ранее ? Хмм ? Хммм ?
+        // TODO: Не нужно ли подумать о локализации отчетов ?
         [HttpGet]
         [Route("{year}/{month}")]
         public IActionResult Download(int year, int month)
         {
+            // TODO: Заменить синхронные вызовы на асинхронный везде где возможно
+            
             var actions = new List<(Action<Employee, Report>, Employee)>();
             var report = new Report() { S = MonthNameResolver.MonthName.GetName(year, month) };
+            
+            // TODO: Вынести в appsettings
             const string connString = "Host=192.168.99.100;Username=postgres;Password=1;Database=employee";
             
+            // TODO: Стоит абстрагироваться от NG + зарегистрировать в DI контейнере и позаботиться о Dispose
             var conn = new NpgsqlConnection(connString);
+            
             conn.Open();
+            
+            // TODO: Зачем нужно два отдельных запроса cmd и cmd1 ? Стоит обьединить в один запрос
+            
             var cmd = new NpgsqlCommand("SELECT d.name from deps d where d.active = true", conn);
             var reader = cmd.ExecuteReader();
             while (reader.Read())
@@ -41,8 +53,12 @@ namespace ReportService.Controllers
                         Inn = reader1.GetString(1), 
                         Department = reader1.GetString(2)
                     };
+                    // TODO: Не нужно блокировать поток
+                    // TODO: Стоит абстрагироваться от EmpCodeResolver ради decreased coupling + тестирование
                     emp.BuhCode = EmpCodeResolver.GetCode(emp.Inn).Result;
-                    emp.Salary = emp.Salary();
+                    emp.Salary = emp.Salary(); 
+                    
+                    // TODO: Давайте не будем так делать
                     if (emp.Department != depName)
                         continue;
                     emplist.Add(emp);
@@ -70,6 +86,7 @@ namespace ReportService.Controllers
                 act.Item1(act.Item2, report);
             }
             report.Save();
+            
             var file = System.IO.File.ReadAllBytes("D:\\report.txt");
             var response = File(file, "application/octet-stream", "report.txt");
             return response;

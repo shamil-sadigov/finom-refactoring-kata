@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace ReportService.Domain
 {
+    // TODO: Хоспади шо это 😱
     public static class EmployeeCommonMethods
     {
         public static int Salary(this Employee employee)
