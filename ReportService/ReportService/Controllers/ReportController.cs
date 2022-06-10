@@ -41,51 +41,47 @@ namespace ReportService.Controllers
             
             conn.Open();
             
-            // TODO: Зачем нужно два отдельных запроса cmd и cmd1 ? Стоит обьединить в один запрос
-            
-            var cmd = new NpgsqlCommand("SELECT d.name from deps d where d.active = true", conn);
-            var reader = cmd.ExecuteReader();
-            while (reader.Read())
-            {
-                List<Employee> emplist = new List<Employee>();
-                var depName = reader.GetString(0);
-                var conn1 = new NpgsqlConnection(connString);
-                conn1.Open();
-                var cmd1 = new NpgsqlCommand("SELECT e.name, e.inn, d.name from emps e left join deps d on e.departmentid = d.id", conn1);
-                var reader1 = cmd1.ExecuteReader();
-                while (reader1.Read())
-                {
-                    var emp = new Employee()
-                    {
-                        Name = reader1.GetString(0), 
-                        Inn = reader1.GetString(1), 
-                        Department = reader1.GetString(2)
-                    };
-                    // TODO: Не нужно блокировать поток
-                    // TODO: Стоит абстрагироваться от EmpCodeResolver ради decreased coupling + тестирование
-                    emp.BuhCode = EmpCodeResolver.GetCode(emp.Inn).Result;
-                    emp.Salary = await _salaryProvider.GetSalaryAsync(emp, CancellationToken.None); 
-                    
-                    // TODO: Давайте не будем так делать
-                    if (emp.Department != depName)
-                        continue;
-                    emplist.Add(emp);
-                }
-
-                actions.Add((new ReportFormatter(null).NL, new Employee()));
-                actions.Add((new ReportFormatter(null).WL, new Employee()));
-                actions.Add((new ReportFormatter(null).NL, new Employee()));
-                actions.Add((new ReportFormatter(null).WD, new Employee() { Department = depName } ));
+            List<Employee> emplist = new List<Employee>();
+            var conn1 = new NpgsqlConnection(connString);
+            conn1.Open();
+            var cmd1 = new NpgsqlCommand(
+                @"SELECT employees.name, 
+                         employees.inn, 
+                         departments.name 
+                  FROM employees
+                  LEFT JOIN departments ON employees.departmentid = departments.id
+                  WHERE departments.active = true", conn1);
                 
-                for (int i = 1; i < emplist.Count(); i ++)
+            var reader1 = cmd1.ExecuteReader();
+            while (reader1.Read())
+            {
+                var emp = new Employee()
                 {
-                    actions.Add((new ReportFormatter(emplist[i]).NL, emplist[i]));
-                    actions.Add((new ReportFormatter(emplist[i]).WE, emplist[i]));
-                    actions.Add((new ReportFormatter(emplist[i]).WT, emplist[i]));
-                    actions.Add((new ReportFormatter(emplist[i]).WS, emplist[i]));
-                }  
-
+                    Name = reader1.GetString(0), 
+                    Inn = reader1.GetString(1), 
+                    Department = reader1.GetString(2)
+                };
+                // TODO: Не нужно блокировать поток
+                // TODO: Стоит абстрагироваться от EmpCodeResolver ради decreased coupling + тестирование
+                emp.BuhCode = EmpCodeResolver.GetCode(emp.Inn).Result;
+                emp.Salary = await _salaryProvider.GetSalaryAsync(emp, CancellationToken.None); 
+                
+                emplist.Add(emp);
             }
+
+            actions.Add((new ReportFormatter(null).NL, new Employee()));
+            actions.Add((new ReportFormatter(null).WL, new Employee()));
+            actions.Add((new ReportFormatter(null).NL, new Employee()));
+            actions.Add((new ReportFormatter(null).WD, new Employee() { Department = depName } ));
+            
+            for (int i = 1; i < emplist.Count(); i ++)
+            {
+                actions.Add((new ReportFormatter(emplist[i]).NL, emplist[i]));
+                actions.Add((new ReportFormatter(emplist[i]).WE, emplist[i]));
+                actions.Add((new ReportFormatter(emplist[i]).WT, emplist[i]));
+                actions.Add((new ReportFormatter(emplist[i]).WS, emplist[i]));
+            }  
+                
             actions.Add((new ReportFormatter(null).NL, null));
             actions.Add((new ReportFormatter(null).WL, null));
 
