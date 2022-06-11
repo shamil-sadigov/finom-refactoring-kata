@@ -21,9 +21,5 @@
       <Private>true</Private>
     </Reference>
   </ItemGroup>
-  
-  <ItemGroup>
-    <Folder Include="MonthResolver" />
-  </ItemGroup>
 
 </Project>
