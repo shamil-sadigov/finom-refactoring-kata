@@ -45,7 +45,7 @@ namespace ReportService.Controllers
             
             // TODO: Check how dapper mapping behaves in case of missing marching columns
             
-            List<Employee> employees = await GetEmployeesFromDbAsync(sqlConnection);
+            IReadOnlyList<Employee> employees = await GetEmployeesFromDbAsync(sqlConnection);
             
             foreach (var employee in employees)
             {
@@ -83,7 +83,7 @@ namespace ReportService.Controllers
             return response;
         }
 
-        private static async Task<List<Employee>> GetEmployeesFromDbAsync(NpgsqlConnection sqlConnection)
+        private static async Task<IReadOnlyList<Employee>> GetEmployeesFromDbAsync(NpgsqlConnection sqlConnection)
         {
             var employees =  await sqlConnection.QueryAsync<Employee>(
                 @"SELECT employees.name AS Name, 
