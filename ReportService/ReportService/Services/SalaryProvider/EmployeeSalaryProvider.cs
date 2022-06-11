@@ -3,9 +3,8 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using ReportService.Domain;
 
-namespace ReportService.Services
+namespace ReportService.Services.SalaryProvider
 {
     public class EmployeeSalaryProvider : IEmployeeSalaryProvider
     {
@@ -20,11 +19,16 @@ namespace ReportService.Services
             };
         }
         
-        public async Task<int> GetSalaryAsync(Employee employee, CancellationToken token)
+        public async Task<int> GetSalaryAsync(
+            string employeeBuhCode, 
+            string employeeInn, 
+            CancellationToken token)
         {
-            var request = new GetEmployeeSalaryRequest(employee.BuhCode);
+            // Add null checks
             
-            var response = await _httpClient.PostAsJsonAsync("/api/empcode/" + employee.Inn, request, token);
+            var request = new GetEmployeeSalaryRequest(employeeBuhCode);
+            
+            var response = await _httpClient.PostAsJsonAsync("/api/empcode/" + employeeInn, request, token);
 
             response.EnsureSuccessStatusCode();
 

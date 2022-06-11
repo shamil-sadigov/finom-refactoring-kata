@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,6 +9,8 @@ using Microsoft.AspNetCore.Mvc;
 using Npgsql;
 using ReportService.Domain;
 using ReportService.Services;
+using ReportService.Services.BuhCodeResolver;
+using ReportService.Services.SalaryProvider;
 
 namespace ReportService.Controllers
 {
@@ -15,16 +18,19 @@ namespace ReportService.Controllers
     public class ReportController : Controller
     {
         private readonly IEmployeeSalaryProvider _salaryProvider;
+        private readonly IEmployeeCodeResolver _employeeCodeResolver;
 
-        public ReportController(IEmployeeSalaryProvider salaryProvider)
+        public ReportController(IEmployeeSalaryProvider salaryProvider, IEmployeeCodeResolver employeeCodeResolver)
         {
             _salaryProvider = salaryProvider;
+            _employeeCodeResolver = employeeCodeResolver;
         }
-        
         
         // TODO: Стоит вынести логику логику построения отчетов в отдельный модуль
         // TODO: Почему бы нам не кешировать отчеты которые мы уже генерили ранее ? Хмм ? Хммм ?
         // TODO: Не нужно ли подумать о локализации отчетов ?
+        // TODO: It's better to use different models for building reports and quering DB in order to reduce coupling
+        // TODO: Add exception handling
         [HttpGet]
         [Route("{year}/{month}")]
         public async Task<IActionResult> Download(int year, int month, CancellationToken cancellationToken)
@@ -43,20 +49,56 @@ namespace ReportService.Controllers
             // TODO: Check how dapper mapping behaves in case of missing marching columns
             
             IReadOnlyList<Employee> employees = await GetEmployeesFromDbAsync(sqlConnection);
+
+            await ResolveEmployeeSalariesAsync(employees, cancellationToken);
+
+            var departmentReportItems = employees.GroupBy(x => x.Department)
+                .Select(x =>
+                {
+                    var employeesReportItems = x.Select(y => new EmployeeReportItem(y.Name, y.Salary)).ToArray();
+                    return new DepartmentReportItem(DepartmentName: x.Key, employeesReportItems);
+                });
             
+            // report.Save();
+            
+            // Return stream instead of reading bytes
+            byte[] file = await System.IO.File.ReadAllBytesAsync("D:\\report.txt", cancellationToken);
+            var response = File(file, "application/octet-stream", "report.txt");
+
+            return response;
+        }
+
+        private async Task ResolveEmployeeSalariesAsync(
+            IReadOnlyList<Employee> employees,
+            CancellationToken cancellationToken)
+        {
+            List<Task> employeeSalaryResolverTasks = new();
+
             foreach (var employee in employees)
             {
                 // TODO: Стоит абстрагироваться от EmpCodeResolver ради decreased coupling + тестирование
-                employee.BuhCode = await EmpCodeResolver.GetCodeAsync(employee.Inn);
-                employee.Salary = await _salaryProvider.GetSalaryAsync(employee, CancellationToken.None); 
+
+                var salaryResolverTask = _employeeCodeResolver
+                    .GetEmployeeBuhcodeAsync(employee.Inn, cancellationToken)
+                    .ContinueWith(async codeResolverTask =>
+                    {
+                        if (!codeResolverTask.IsCompletedSuccessfully)
+                        {
+                            throw new InvalidOperationException(
+                                "Something went wrong during getting employee Inn",
+                                codeResolverTask.Exception);
+                        }
+
+                        var employeeBuhCode = codeResolverTask.Result;
+
+                        employee.Salary = 
+                            await _salaryProvider.GetSalaryAsync(employeeBuhCode, employee.Inn, cancellationToken);
+                    }, cancellationToken).Unwrap();
+
+                employeeSalaryResolverTasks.Add(salaryResolverTask);
             }
-            
-          
-            // report.Save();
-            
-            var file = await System.IO.File.ReadAllBytesAsync("D:\\report.txt", cancellationToken);
-            var response = File(file, "application/octet-stream", "report.txt");
-            return response;
+
+            await Task.WhenAll(employeeSalaryResolverTasks);
         }
 
         private static async Task<IReadOnlyList<Employee>> GetEmployeesFromDbAsync(NpgsqlConnection sqlConnection)
