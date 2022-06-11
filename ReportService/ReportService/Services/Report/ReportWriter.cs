@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,6 +12,7 @@ public sealed class ReportWriter:IReportWriter
 {
     private readonly string _dashedLine = new('-', 20);
     
+    public readonly CultureInfo ReportCulture = new("ru-ru");
     
     public async Task WriteReportAsync(
         TextWriter textWriter, 
@@ -27,7 +29,7 @@ public sealed class ReportWriter:IReportWriter
 
     private async Task WriteHeaderAsync(TextWriter streamWriter, int year, int month)
     {
-        var yearAndMonth = new DateTime(year, month, 0).ToString("Y");
+        var yearAndMonth = new DateTime(year, month, 1).ToString("Y", ReportCulture);
 
         await streamWriter.WriteLineAsync(yearAndMonth);
         await streamWriter.WriteLineAsync(_dashedLine);
@@ -37,7 +39,7 @@ public sealed class ReportWriter:IReportWriter
         TextWriter streamWriter, 
         IReadOnlyCollection<EmployeeReportItem> employees)
     {
-        int organizationSalarySum = 0;
+        var organizationSalarySum = 0;
         
         foreach (var department in employees.GroupBy(x => x.Department))
         {
@@ -48,15 +50,12 @@ public sealed class ReportWriter:IReportWriter
 
             foreach (var employee in department)
             {
-                await streamWriter.WriteAsync(employee.Name);
-                await streamWriter.WriteAsync(' ');
-                await streamWriter.WriteLineAsync(employee.Salary.ToString());
-
+                await streamWriter.WriteLineAsync($"{employee.Name} {employee.Salary.ToString("C0", ReportCulture)}");
                 departmentSalarySum += employee.Salary;
             }
 
-            await streamWriter.WriteAsync("Всего по отделу ");
-            await streamWriter.WriteLineAsync(departmentSalarySum.ToString());
+            await streamWriter.WriteLineAsync();
+            await streamWriter.WriteLineAsync($"Всего по отделу {departmentSalarySum.ToString("C0", ReportCulture)}");
             await streamWriter.WriteLineAsync(_dashedLine);
 
             organizationSalarySum += departmentSalarySum;
@@ -67,6 +66,6 @@ public sealed class ReportWriter:IReportWriter
     
     private async Task WriteFooterAsync(TextWriter streamWriter, int organizationSalarySum)
     {
-        await streamWriter.WriteLineAsync("Всего по предприятию " + organizationSalarySum);
+        await streamWriter.WriteAsync("Всего по предприятию " + organizationSalarySum.ToString("C0", ReportCulture));
     }
 }
