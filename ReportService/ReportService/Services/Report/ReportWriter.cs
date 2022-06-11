@@ -14,7 +14,7 @@ public sealed class ReportWriter:IReportWriter
     
     public readonly CultureInfo ReportCulture = new("ru-ru");
     
-    public async Task WriteReportAsync(
+    public async Task WriteAsync(
         TextWriter textWriter, 
         int year,
         int month, 

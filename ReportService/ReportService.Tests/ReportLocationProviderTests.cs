@@ -1,7 +1,6 @@
 
 using FluentAssertions;
 using ReportService.Services.Report;
-using Xunit.Abstractions;
 
 namespace ReportService.Tests;
 

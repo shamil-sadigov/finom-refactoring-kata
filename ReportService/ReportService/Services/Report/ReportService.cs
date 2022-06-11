@@ -25,7 +25,7 @@ public sealed class ReportService:IReportService
 
         await using var streamWriter = File.CreateText(reportFilePath);
         
-        await _reportWriter.WriteReportAsync(streamWriter, year, month, employees);
+        await _reportWriter.WriteAsync(streamWriter, year, month, employees);
 
         return new ReportLocation(ReportLocationType.FileSystem, reportFilePath);
     }

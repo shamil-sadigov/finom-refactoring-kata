@@ -1,7 +1,6 @@
 ﻿using FluentAssertions;
 using ReportService.Domain;
 using ReportService.Services.Report;
-using Xunit.Abstractions;
 
 namespace ReportService.Tests.ReportWriters;
 
@@ -17,7 +16,7 @@ public class ReportWriterTests
         var expectedReport = await GetExpectedReport();
 
         // Act
-        await reportWriter.WriteReportAsync(stringWriter, 2020, 10, employees);
+        await reportWriter.WriteAsync(stringWriter, 2020, 10, employees);
         var actualReport = stringWriter.ToString();
 
         // Assert
