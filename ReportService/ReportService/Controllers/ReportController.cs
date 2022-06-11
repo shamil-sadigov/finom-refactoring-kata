@@ -1,6 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,7 +9,39 @@ using Npgsql;
 using ReportService.Domain;
 using ReportService.Services;
 using ReportService.Services.BuhCodeResolver;
+using ReportService.Services.Report;
 using ReportService.Services.SalaryProvider;
+
+/*
+ *  NOTES:
+ *
+ * - Предполагаю что отчеты созданные за прошлые месяцы уже имутабельны а значит их можно сохранять
+ * и при вовтороном запросе возвращать уже готовые сораненные отчеты а не генерить заново.
+ * В рамках текущего решения отчеты сохраняются в локальной файловой системе, но конечно в продашне
+ * этого делать не стоит, потому docker контейнеры как правило без состояния, а нам нужно более надежное хранилище.
+ * Какие варианты ?
+ *
+ * - Если у нас кубер, то можно сохраняться в Persistent Volume Storage
+ * - Или же можно сохранять хранилище S3.
+ * - Или другие варианты.
+ *
+ *
+ * - Я бы не стал делать синронные вызовы в сторонние сервисы чтобы получить BuhCode и Salary,
+ * это не по микросервистски потому что может привести к reduced availability.
+ * Я бы попробовал подписаться на нужные мне события и держать локальную реплику нужных мне данных,
+ * таким образом при необходимости я могу брать данные из реплики а не запрашивать у сервисов
+ * а актуальность данных поддерживать через события
+ * (но и тут нужно подумать, потому что это уже eventual consistency,
+ * следует убедиться что мы не столкнемся с негативными последвтсиями временно несогласованных данных).
+ *
+ * 
+ * Я бы добавил локализацию, но думаю это не сложно и не является целью нашей задачи
+ *
+ * Можно было бы добавить отказоустойчивости при запросе внешних сервисом, но мне кажется это не цель задачи
+ *
+ * Можно было бы добавит логгирования
+ */
+
 
 namespace ReportService.Controllers
 {
@@ -19,11 +50,19 @@ namespace ReportService.Controllers
     {
         private readonly IEmployeeSalaryProvider _salaryProvider;
         private readonly IEmployeeCodeResolver _employeeCodeResolver;
+        private readonly EmployeeModelTransformation _employeeModelTransformation;
+        private readonly IReportService _reportService;
 
-        public ReportController(IEmployeeSalaryProvider salaryProvider, IEmployeeCodeResolver employeeCodeResolver)
+        public ReportController(
+            IEmployeeSalaryProvider salaryProvider, 
+            IEmployeeCodeResolver employeeCodeResolver,
+            EmployeeModelTransformation employeeModelTransformation,
+            IReportService reportService)
         {
             _salaryProvider = salaryProvider;
             _employeeCodeResolver = employeeCodeResolver;
+            _employeeModelTransformation = employeeModelTransformation;
+            _reportService = reportService;
         }
         
         // TODO: Стоит вынести логику логику построения отчетов в отдельный модуль
@@ -31,8 +70,7 @@ namespace ReportService.Controllers
         // TODO: Не нужно ли подумать о локализации отчетов ?
         // TODO: It's better to use different models for building reports and quering DB in order to reduce coupling
         // TODO: Add exception handling
-        [HttpGet]
-        [Route("{year}/{month}")]
+        [HttpGet("{year}/{month}")]
         public async Task<IActionResult> Download(int year, int month, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -47,66 +85,31 @@ namespace ReportService.Controllers
             await sqlConnection.OpenAsync(cancellationToken);
             
             // TODO: Check how dapper mapping behaves in case of missing marching columns
+
+            IReadOnlyList<EmployeeModel> employees = await GetEmployeesFromDbAsync(sqlConnection);
+
+            EmployeeReportItem[] employeeReportItems = 
+                await _employeeModelTransformation.TransformToReportableItemsAsync(employees, cancellationToken);
             
-            IReadOnlyList<Employee> employees = await GetEmployeesFromDbAsync(sqlConnection);
-
-            await ResolveEmployeeSalariesAsync(employees, cancellationToken);
-
-            var departmentReportItems = employees.GroupBy(x => x.Department)
-                .Select(x =>
-                {
-                    var employeesReportItems = x.Select(y => new EmployeeReportItem(y.Name, y.Salary)).ToArray();
-                    return new DepartmentReportItem(DepartmentName: x.Key, employeesReportItems);
-                });
+            var reportLocation = 
+                await _reportService.CreateReportAsync(new AccountingReportParams(year, month, employeeReportItems));
             
             // report.Save();
             
             // Return stream instead of reading bytes
             byte[] file = await System.IO.File.ReadAllBytesAsync("D:\\report.txt", cancellationToken);
             var response = File(file, "application/octet-stream", "report.txt");
-
+            
             return response;
         }
 
-        private async Task ResolveEmployeeSalariesAsync(
-            IReadOnlyList<Employee> employees,
-            CancellationToken cancellationToken)
+
+        private static async Task<IReadOnlyList<EmployeeModel>> GetEmployeesFromDbAsync(IDbConnection sqlConnection)
         {
-            List<Task> employeeSalaryResolverTasks = new();
-
-            foreach (var employee in employees)
-            {
-                // TODO: Стоит абстрагироваться от EmpCodeResolver ради decreased coupling + тестирование
-
-                var salaryResolverTask = _employeeCodeResolver
-                    .GetEmployeeBuhcodeAsync(employee.Inn, cancellationToken)
-                    .ContinueWith(async codeResolverTask =>
-                    {
-                        if (!codeResolverTask.IsCompletedSuccessfully)
-                        {
-                            throw new InvalidOperationException(
-                                "Something went wrong during getting employee Inn",
-                                codeResolverTask.Exception);
-                        }
-
-                        var employeeBuhCode = codeResolverTask.Result;
-
-                        employee.Salary = 
-                            await _salaryProvider.GetSalaryAsync(employeeBuhCode, employee.Inn, cancellationToken);
-                    }, cancellationToken).Unwrap();
-
-                employeeSalaryResolverTasks.Add(salaryResolverTask);
-            }
-
-            await Task.WhenAll(employeeSalaryResolverTasks);
-        }
-
-        private static async Task<IReadOnlyList<Employee>> GetEmployeesFromDbAsync(NpgsqlConnection sqlConnection)
-        {
-            var employees =  await sqlConnection.QueryAsync<Employee>(
+            var employees =  await sqlConnection.QueryAsync<EmployeeModel>(
                 @"SELECT employees.name AS Name, 
                          employees.inn AS Inn, 
-                         departments.name AS Department,
+                         departments.name AS Department
                   FROM employees
                   LEFT JOIN departments ON employees.departmentid = departments.id
                   WHERE departments.active = true");

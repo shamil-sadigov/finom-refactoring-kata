@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using ReportService.Controllers;
 using ReportService.Services;
 using ReportService.Services.BuhCodeResolver;
 using ReportService.Services.SalaryProvider;
@@ -25,6 +24,8 @@ namespace ReportService
             services.AddMvc();
             services.AddSingleton<IEmployeeSalaryProvider, EmployeeSalaryProvider>();
             services.AddSingleton<IEmployeeCodeResolver, EmployeeCodeResolver>();
+            services.AddSingleton<EmployeeModelTransformation>();
+           
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
