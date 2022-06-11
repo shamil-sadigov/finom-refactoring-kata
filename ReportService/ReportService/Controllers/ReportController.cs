@@ -32,7 +32,7 @@ namespace ReportService.Controllers
             // TODO: Заменить синхронные вызовы на асинхронный везде где возможно
             
             // var actions = new List<(Action<Employee, Report>, Employee)>();
-            var report = new Report() { Content = MonthNameResolver.MonthName.GetName(year, month) };
+            // var report = new Report() { Content = MonthNameResolver.MonthName.GetName(year, month) };
             
             // TODO: Вынести в appsettings
             const string connString = "Host=192.168.99.100;Username=postgres;Password=1;Database=employee";
