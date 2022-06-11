@@ -1,8 +1,4 @@
-﻿using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace ReportService.Services.BuhCodeResolver;
+﻿namespace ReportService.Application.BuhCodeResolver;
 
 public class EmployeeCodeResolver:IEmployeeCodeResolver
 {

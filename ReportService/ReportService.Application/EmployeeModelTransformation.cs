@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using ReportService.Domain;
-using ReportService.Services.BuhCodeResolver;
-using ReportService.Services.SalaryProvider;
+﻿using ReportService.Application.BuhCodeResolver;
+using ReportService.Application.SalaryProvider;
 
-namespace ReportService.Services;
+namespace ReportService.Application;
 
 // TODO: Add comments
+
 public sealed class EmployeeModelTransformation
 {
     private readonly IEmployeeCodeResolver _employeeCodeResolver;
@@ -43,18 +39,19 @@ public sealed class EmployeeModelTransformation
     {
         var convertToReportableItemTask = _employeeCodeResolver
             .GetEmployeeBuhcodeAsync(employee.Inn, cancellationToken)
-            .ContinueWith(async codeResolverTask =>
+            .ContinueWith(async buhCodeResolverTask =>
             {
-                if (!codeResolverTask.IsCompletedSuccessfully)
+                if (!buhCodeResolverTask.IsCompletedSuccessfully)
                 {
                     throw new InvalidOperationException(
-                        "Something went wrong during getting employee Inn",
-                        codeResolverTask.Exception);
+                        $"Something went wrong during getting employee buh code by Inn : {employee.Inn}",
+                        buhCodeResolverTask.Exception);
                 }
 
-                var employeeBuhCode = codeResolverTask.Result;
+                var employeeBuhCode = buhCodeResolverTask.Result;
 
-                // Странно что при получении зарплаты мы не используем значения year или month которые на приходят в контроллер
+                // Странно что при получении зарплаты мы не используем значения year
+                // или month которые нам приходят в контроллер
                 // А откуда же тогда удаленный сервис знает за какой период зарплату мы хотим получить ?
                 // Это надо обусудить
                 

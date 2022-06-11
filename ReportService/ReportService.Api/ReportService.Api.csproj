@@ -21,5 +21,13 @@
       <Private>true</Private>
     </Reference>
   </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\ReportService.Application\ReportService.Application.csproj" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Folder Include="Services" />
+  </ItemGroup>
 
 </Project>

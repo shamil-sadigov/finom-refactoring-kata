@@ -1,16 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
-using Dapper;
 using Microsoft.AspNetCore.Mvc;
-using Npgsql;
-using ReportService.Domain;
-using ReportService.Services;
-using ReportService.Services.BuhCodeResolver;
-using ReportService.Services.Report;
-using ReportService.Services.SalaryProvider;
+using ReportService.Application;
+using ReportService.Application.BuhCodeResolver;
+using ReportService.Application.Report;
+using ReportService.Application.Report.Abstractions;
+using ReportService.Application.SalaryProvider;
 
 /*
  *  NOTES:
@@ -42,27 +37,16 @@ using ReportService.Services.SalaryProvider;
  * Можно было бы добавит логгирования
  */
 
-
-namespace ReportService.Controllers
+namespace ReportService.Api.Controllers
 {
     [Route("api/[controller]")]
     public class ReportController : Controller
     {
-        private readonly IEmployeeSalaryProvider _salaryProvider;
-        private readonly IEmployeeCodeResolver _employeeCodeResolver;
-        private readonly EmployeeModelTransformation _employeeModelTransformation;
-        private readonly IReportService _reportService;
+        private readonly ReportProvider _reportProvider;
 
-        public ReportController(
-            IEmployeeSalaryProvider salaryProvider, 
-            IEmployeeCodeResolver employeeCodeResolver,
-            EmployeeModelTransformation employeeModelTransformation,
-            IReportService reportService)
+        public ReportController(ReportProvider reportProvider)
         {
-            _salaryProvider = salaryProvider;
-            _employeeCodeResolver = employeeCodeResolver;
-            _employeeModelTransformation = employeeModelTransformation;
-            _reportService = reportService;
+            _reportProvider = reportProvider;
         }
         
         // TODO: Стоит вынести логику логику построения отчетов в отдельный модуль
@@ -73,26 +57,8 @@ namespace ReportService.Controllers
         [HttpGet("{year}/{month}")]
         public async Task<IActionResult> Download(int year, int month, CancellationToken cancellationToken)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-            
-            // TODO: Вынести в appsettings
-            const string connString = "Host=192.168.99.100;Username=postgres;Password=1;Database=employee";
-            
-            // TODO: Стоит абстрагироваться от NG + зарегистрировать в DI контейнере и позаботиться о Dispose
-            
-            var sqlConnection = new NpgsqlConnection(connString);
-            
-            await sqlConnection.OpenAsync(cancellationToken);
-            
-            // TODO: Check how dapper mapping behaves in case of missing marching columns
-
-            IReadOnlyList<EmployeeModel> employees = await GetEmployeesFromDbAsync(sqlConnection);
-
-            EmployeeReportItem[] employeeReportItems = 
-                await _employeeModelTransformation.TransformToReportableItemsAsync(employees, cancellationToken);
-            
-            var reportLocation = 
-                await _reportService.CreateReportAsync(new AccountingReportParams(year, month, employeeReportItems));
+            // TODO: What result ?
+             await _reportProvider.CreateReportAsync(year, month, cancellationToken);
             
             // report.Save();
             
@@ -102,19 +68,7 @@ namespace ReportService.Controllers
             
             return response;
         }
-
-
-        private static async Task<IReadOnlyList<EmployeeModel>> GetEmployeesFromDbAsync(IDbConnection sqlConnection)
-        {
-            var employees =  await sqlConnection.QueryAsync<EmployeeModel>(
-                @"SELECT employees.name AS Name, 
-                         employees.inn AS Inn, 
-                         departments.name AS Department
-                  FROM employees
-                  LEFT JOIN departments ON employees.departmentid = departments.id
-                  WHERE departments.active = true");
-
-            return employees.ToList();
-        }
+        
+       
     }
 }

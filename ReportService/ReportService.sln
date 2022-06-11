@@ -3,11 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27130.2003
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReportService", "ReportService\ReportService.csproj", "{231E862D-6509-4701-B706-B7E17887C9B2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReportService.Api", "ReportService.Api\ReportService.Api.csproj", "{231E862D-6509-4701-B706-B7E17887C9B2}"
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{CA96146C-735D-4388-BCB2-CDEF1564E951}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReportService.Tests", "ReportService.Tests\ReportService.Tests.csproj", "{C8568D56-44F9-401E-9756-DB1B0B8B2F32}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReportService.Application", "ReportService.Application\ReportService.Application.csproj", "{7720691D-5C77-48F2-83D7-36ECDAFB291A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReportService.Infrastructure", "ReportService.Infrastructure\ReportService.Infrastructure.csproj", "{D7665783-BCF1-45B0-B87A-7370A911F751}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +31,14 @@ Global
 		{C8568D56-44F9-401E-9756-DB1B0B8B2F32}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C8568D56-44F9-401E-9756-DB1B0B8B2F32}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C8568D56-44F9-401E-9756-DB1B0B8B2F32}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7720691D-5C77-48F2-83D7-36ECDAFB291A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7720691D-5C77-48F2-83D7-36ECDAFB291A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7720691D-5C77-48F2-83D7-36ECDAFB291A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7720691D-5C77-48F2-83D7-36ECDAFB291A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D7665783-BCF1-45B0-B87A-7370A911F751}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D7665783-BCF1-45B0-B87A-7370A911F751}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D7665783-BCF1-45B0-B87A-7370A911F751}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D7665783-BCF1-45B0-B87A-7370A911F751}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

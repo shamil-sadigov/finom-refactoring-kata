@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 
-namespace ReportService
+namespace ReportService.Api
 {
     public class Program
     {

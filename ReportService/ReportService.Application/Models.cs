@@ -1,4 +1,4 @@
-﻿namespace ReportService.Domain
+﻿namespace ReportService.Application
 {
     public sealed record EmployeeReportItem(string Name, string Inn, string Department, int Salary);
 

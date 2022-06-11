@@ -1,7 +1,4 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-
-namespace ReportService.Services.BuhCodeResolver;
+﻿namespace ReportService.Application.BuhCodeResolver;
 
 public interface IEmployeeCodeResolver
 {

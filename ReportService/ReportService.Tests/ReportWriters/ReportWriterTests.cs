@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
-using ReportService.Domain;
-using ReportService.Services.Report;
+using ReportService.Application;
+using ReportService.Application.Report;
 
 namespace ReportService.Tests.ReportWriters;
 
@@ -11,10 +11,11 @@ public class ReportWriterTests
     {
         // Arrange
         var employees = CreateSampleEmployees();
-        var stringWriter = new StringWriter();
-        var reportWriter = new ReportWriter();
         var expectedReport = await GetExpectedReport();
-
+        
+        var reportWriter = new ReportWriter();
+        var stringWriter = new StringWriter();
+        
         // Act
         await reportWriter.WriteAsync(stringWriter, 2020, 10, employees);
         var actualReport = stringWriter.ToString();

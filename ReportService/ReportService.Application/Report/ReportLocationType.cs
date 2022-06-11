@@ -1,4 +1,4 @@
-﻿namespace ReportService.Services.Report;
+﻿namespace ReportService.Application.Report;
 
 public enum ReportLocationType
 {

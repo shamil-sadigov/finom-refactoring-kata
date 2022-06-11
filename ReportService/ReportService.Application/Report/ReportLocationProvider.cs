@@ -1,7 +1,6 @@
-﻿using System;
-using System.IO;
+﻿using ReportService.Application.Report.Abstractions;
 
-namespace ReportService.Services.Report;
+namespace ReportService.Application.Report;
 
 public class ReportLocationProvider : IReportLocationProvider
 {

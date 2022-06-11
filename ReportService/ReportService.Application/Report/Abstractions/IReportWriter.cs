@@ -1,9 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Threading.Tasks;
-using ReportService.Domain;
-
-namespace ReportService.Services.Report;
+﻿namespace ReportService.Application.Report.Abstractions;
 
 // TODO: Register in DI container
 public interface IReportWriter

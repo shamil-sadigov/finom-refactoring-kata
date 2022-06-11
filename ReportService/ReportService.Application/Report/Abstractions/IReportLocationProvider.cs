@@ -1,4 +1,4 @@
-﻿namespace ReportService.Services.Report;
+﻿namespace ReportService.Application.Report.Abstractions;
 
 // TODO: Register in DI Container
 public interface IReportLocationProvider

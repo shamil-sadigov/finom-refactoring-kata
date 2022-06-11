@@ -3,11 +3,11 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using ReportService.Services;
-using ReportService.Services.BuhCodeResolver;
-using ReportService.Services.SalaryProvider;
+using ReportService.Application;
+using ReportService.Application.BuhCodeResolver;
+using ReportService.Application.SalaryProvider;
 
-namespace ReportService
+namespace ReportService.Api
 {
     public class Startup
     {

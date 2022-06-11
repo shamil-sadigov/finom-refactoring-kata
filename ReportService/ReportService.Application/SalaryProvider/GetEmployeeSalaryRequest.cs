@@ -1,3 +1,3 @@
-namespace ReportService.Services.SalaryProvider;
+namespace ReportService.Application.SalaryProvider;
 
 public record GetEmployeeSalaryRequest(string BuhCode);

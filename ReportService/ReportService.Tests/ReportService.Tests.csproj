@@ -24,13 +24,17 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\ReportService\ReportService.csproj" />
+      <ProjectReference Include="..\ReportService.Api\ReportService.Api.csproj" />
     </ItemGroup>
 
     <ItemGroup>
       <None Update="ReportWriters\Expected_report.txt">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="ReportService" />
     </ItemGroup>
     
 </Project>

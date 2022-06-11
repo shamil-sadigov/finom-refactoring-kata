@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using ReportService.Domain;
+﻿using System.Globalization;
+using ReportService.Application.Report.Abstractions;
 
-namespace ReportService.Services.Report;
+namespace ReportService.Application.Report;
 
 public sealed class ReportWriter:IReportWriter
 {

@@ -1,6 +1,6 @@
 
 using FluentAssertions;
-using ReportService.Services.Report;
+using ReportService.Application.Report;
 
 namespace ReportService.Tests;
 
@@ -13,14 +13,14 @@ public class ReportLocationProviderTests
     public void Should_return_expected_report_location(int year, int month)
     {
         // Arrange
-        var pathBuilder = new ReportLocationProvider();
+        var locationProvider = new ReportLocationProvider();
 
         var expectedPath = Path.Combine(
             Directory.GetCurrentDirectory(), 
             @$"reports\2020\accounting-report-{year}-{month}.txt");
         
         // Act
-        var filePath = pathBuilder.GetReportLocation(year, month);
+        var filePath = locationProvider.GetReportLocation(year, month);
         
         // Assert
         filePath.Should().Be(expectedPath);
