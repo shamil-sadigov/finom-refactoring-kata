@@ -9,7 +9,7 @@ namespace ReportService.Services.Report;
 public interface IReportWriter
 {
     public Task WriteReportAsync(
-        StreamWriter streamWriter,
+        TextWriter textWriter,
         int year,
         int month,
         IReadOnlyCollection<EmployeeReportItem> employees);

@@ -11,20 +11,21 @@ public sealed class ReportWriter:IReportWriter
 {
     private readonly string _dashedLine = new('-', 20);
     
+    
     public async Task WriteReportAsync(
-        StreamWriter streamWriter, 
+        TextWriter textWriter, 
         int year,
         int month, 
         IReadOnlyCollection<EmployeeReportItem> employees)
     {
-        await WriteHeaderAsync(streamWriter, year, month);
+        await WriteHeaderAsync(textWriter, year, month);
         
-        var organizationSalarySum = await WriteBodyAsync(streamWriter, employees);
+        var organizationSalarySum = await WriteBodyAsync(textWriter, employees);
         
-        await WriteFooterAsync(streamWriter, organizationSalarySum);
+        await WriteFooterAsync(textWriter, organizationSalarySum);
     }
 
-    private async Task WriteHeaderAsync(StreamWriter streamWriter, int year, int month)
+    private async Task WriteHeaderAsync(TextWriter streamWriter, int year, int month)
     {
         var yearAndMonth = new DateTime(year, month, 0).ToString("Y");
 
@@ -33,7 +34,7 @@ public sealed class ReportWriter:IReportWriter
     }
     
     private async Task<int> WriteBodyAsync(
-        StreamWriter streamWriter, 
+        TextWriter streamWriter, 
         IReadOnlyCollection<EmployeeReportItem> employees)
     {
         int organizationSalarySum = 0;
@@ -64,7 +65,7 @@ public sealed class ReportWriter:IReportWriter
         return organizationSalarySum;
     }
     
-    private static async Task WriteFooterAsync(StreamWriter streamWriter, int organizationSalarySum)
+    private async Task WriteFooterAsync(TextWriter streamWriter, int organizationSalarySum)
     {
         await streamWriter.WriteLineAsync("Всего по предприятию " + organizationSalarySum);
     }
