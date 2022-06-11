@@ -27,4 +27,10 @@
       <ProjectReference Include="..\ReportService\ReportService.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Update="ReportWriters\Expected_report.txt">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+    
 </Project>
