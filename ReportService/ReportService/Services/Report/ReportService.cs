@@ -6,14 +6,14 @@ namespace ReportService.Services.Report;
 public sealed class ReportService:IReportService
 {
     // Возможно эта абстракция лишняя
-    private readonly IReportFilePathBuilder _pathBuilder;
+    private readonly IReportLocationProvider _pathProvider;
     private readonly IReportWriter _reportWriter;
 
     public ReportService(
-        IReportFilePathBuilder pathBuilder, 
+        IReportLocationProvider pathProvider, 
         IReportWriter reportWriter)
     {
-        _pathBuilder = pathBuilder;
+        _pathProvider = pathProvider;
         _reportWriter = reportWriter;
     }
     
@@ -21,7 +21,7 @@ public sealed class ReportService:IReportService
     {
         var (year, month, employees) = @params;
         
-        var reportFilePath = _pathBuilder.GetFilePath(year, month);
+        var reportFilePath = _pathProvider.GetReportLocation(year, month);
 
         await using var streamWriter = File.CreateText(reportFilePath);
         
