@@ -5,5 +5,5 @@ public record AccountingReportParams(int Year, int Month, IReadOnlyCollection<Em
 public interface IReportGenerator
 {
     /// <returns>Address of created report</returns>
-    Task<ReportLocation> GenerateReportAsync(AccountingReportParams @params);
+    Task<Report> GenerateReportAsync(AccountingReportParams @params);
 }

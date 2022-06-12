@@ -25,7 +25,6 @@ namespace ReportService.Api
             services.AddSingleton<IEmployeeSalaryProvider, EmployeeSalaryProvider>();
             services.AddSingleton<IEmployeeCodeResolver, EmployeeCodeResolver>();
             services.AddSingleton<EmployeeModelTransformation>();
-           
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

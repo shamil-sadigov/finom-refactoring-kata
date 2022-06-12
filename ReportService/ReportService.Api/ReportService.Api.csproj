@@ -25,9 +25,5 @@
   <ItemGroup>
     <ProjectReference Include="..\ReportService.Application\ReportService.Application.csproj" />
   </ItemGroup>
-  
-  <ItemGroup>
-    <Folder Include="Services" />
-  </ItemGroup>
 
 </Project>

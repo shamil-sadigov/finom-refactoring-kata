@@ -18,7 +18,7 @@ public class ReportProvider
         _employeeRepository = employeeRepository;
     }
 
-    public async Task CreateReportAsync(int year, int month, CancellationToken cancellationToken)
+    public async Task<Report> CreateReportAsync(int year, int month, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
         
@@ -28,9 +28,9 @@ public class ReportProvider
         EmployeeReportItem[] employeeReportItems = 
             await _employeeModelTransformation.TransformToReportableItemsAsync(employees, cancellationToken);
             
-        var reportLocation = 
+        Report report = 
             await _reportGenerator.GenerateReportAsync(new AccountingReportParams(year, month, employeeReportItems));
 
-        // TODO: Thing about what to return
+        return report;
     }
 }

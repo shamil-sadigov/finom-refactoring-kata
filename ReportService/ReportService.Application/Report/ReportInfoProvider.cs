@@ -2,12 +2,12 @@
 
 namespace ReportService.Application.Report;
 
-public class ReportLocationProvider : IReportLocationProvider
+public class ReportInfoProvider : IReportInfoProvider
 {
     /// <summary>
     /// Builds and returns path where report should be uploaded.
     /// </summary>
-    public string GetReportLocation(int year, int month)
+    public ReportInfo GetReportInfo(int year, int month)
     {
         ValidateArguments(year, month);
 
@@ -20,7 +20,7 @@ public class ReportLocationProvider : IReportLocationProvider
             fileName);
 
         // destination path looks like => '..\reports\2018\accounting-report-2018-05.txt'
-        return destinationPath;
+        return new ReportInfo(destinationPath, fileName);
     }
 
     private static void ValidateArguments(int year, int month)

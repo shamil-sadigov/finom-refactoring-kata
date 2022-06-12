@@ -1,11 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using ReportService.Application;
-using ReportService.Application.BuhCodeResolver;
 using ReportService.Application.Report;
-using ReportService.Application.Report.Abstractions;
-using ReportService.Application.SalaryProvider;
 
 /*
  *  NOTES:
@@ -49,26 +45,15 @@ namespace ReportService.Api.Controllers
             _reportProvider = reportProvider;
         }
         
-        // TODO: Стоит вынести логику логику построения отчетов в отдельный модуль
-        // TODO: Почему бы нам не кешировать отчеты которые мы уже генерили ранее ? Хмм ? Хммм ?
-        // TODO: Не нужно ли подумать о локализации отчетов ?
-        // TODO: It's better to use different models for building reports and quering DB in order to reduce coupling
         // TODO: Add exception handling
         [HttpGet("{year}/{month}")]
         public async Task<IActionResult> Download(int year, int month, CancellationToken cancellationToken)
         {
-            // TODO: What result ?
-             await _reportProvider.CreateReportAsync(year, month, cancellationToken);
+            var report =  await _reportProvider.CreateReportAsync(year, month, cancellationToken);
             
-            // report.Save();
-            
-            // Return stream instead of reading bytes
-            byte[] file = await System.IO.File.ReadAllBytesAsync("D:\\report.txt", cancellationToken);
-            var response = File(file, "application/octet-stream", "report.txt");
+            var response = File(report.AsStream(), "application/octet-stream", report.FileName);
             
             return response;
         }
-        
-       
     }
 }

@@ -1,7 +1,7 @@
 ﻿namespace ReportService.Application.Report.Abstractions;
 
 // TODO: Register in DI Container
-public interface IReportLocationProvider
+public interface IReportInfoProvider
 {
-    string GetReportLocation(int year, int month);
+    ReportInfo GetReportInfo(int year, int month);
 }

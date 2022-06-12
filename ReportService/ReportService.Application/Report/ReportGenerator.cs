@@ -5,14 +5,14 @@ namespace ReportService.Application.Report;
 public sealed class ReportGenerator:IReportGenerator
 {
     // Возможно эта абстракция лишняя
-    private readonly IReportLocationProvider _pathProvider;
+    private readonly IReportInfoProvider _reportInfoProvider;
     private readonly IReportWriter _reportWriter;
 
     public ReportGenerator(
-        IReportLocationProvider pathProvider, 
+        IReportInfoProvider reportInfoProvider, 
         IReportWriter reportWriter)
     {
-        _pathProvider = pathProvider;
+        _reportInfoProvider = reportInfoProvider;
         _reportWriter = reportWriter;
     }
     
@@ -20,22 +20,22 @@ public sealed class ReportGenerator:IReportGenerator
     // - Create report and get it from location and validate
     // - Test when report is requested 2 times, then 2 time should not be calculated
     
-    public async Task<ReportLocation> GenerateReportAsync(AccountingReportParams @params)
+    public async Task<Report> GenerateReportAsync(AccountingReportParams @params)
     {
         var (year, month, employees) = @params;
         
-        string reportLocation = _pathProvider.GetReportLocation(year, month);
+        ReportInfo report = _reportInfoProvider.GetReportInfo(year, month);
 
-        if (File.Exists(reportLocation))
-            return new ReportLocation(ReportLocationType.FileSystem, reportLocation);
+        if (File.Exists(report.FileName))
+            return new LocalFileReport(report.Location, report.FileName);
         
-        await CreateReportAsync();
+        await WriteReportAsync();
 
-        return new ReportLocation(ReportLocationType.FileSystem, reportLocation);
+        return new LocalFileReport(report.Location, report.FileName);
         
-        async Task CreateReportAsync()
+        async Task WriteReportAsync()
         {
-            await using var streamWriter = File.CreateText(reportLocation);
+            await using var streamWriter = File.CreateText(report.Location);
             await _reportWriter.WriteAsync(streamWriter, year, month, employees);
         }
     }

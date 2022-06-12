@@ -13,14 +13,14 @@ public class ReportLocationProviderTests
     public void Should_return_expected_report_location(int year, int month)
     {
         // Arrange
-        var locationProvider = new ReportLocationProvider();
+        var locationProvider = new ReportInfoProvider();
 
         var expectedPath = Path.Combine(
             Directory.GetCurrentDirectory(), 
             @$"reports\2020\accounting-report-{year}-{month}.txt");
         
         // Act
-        var filePath = locationProvider.GetReportLocation(year, month);
+        var filePath = locationProvider.GetReportInfo(year, month);
         
         // Assert
         filePath.Should().Be(expectedPath);
@@ -33,9 +33,9 @@ public class ReportLocationProviderTests
     [InlineData(2010, -3)]
     public void Cannot_get_report_location_when_provided_time_is_invalid(int year, int month)
     {
-        var pathBuilder = new ReportLocationProvider();
+        var pathBuilder = new ReportInfoProvider();
         
-        pathBuilder.Invoking(x => x.GetReportLocation(year, month))
+        pathBuilder.Invoking(x => x.GetReportInfo(year, month))
             .Should()
             .Throw<ArgumentOutOfRangeException>();
     }
