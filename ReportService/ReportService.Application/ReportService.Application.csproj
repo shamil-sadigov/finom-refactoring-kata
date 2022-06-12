@@ -5,14 +5,9 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
     </PropertyGroup>
-
-    <ItemGroup>
-      <PackageReference Include="Dapper" Version="2.0.123" />
-      <PackageReference Include="Npgsql" Version="3.2.6" />
-    </ItemGroup>
-
+    
     <ItemGroup>
       <Folder Include="Resolvers" />
     </ItemGroup>
-
+    
 </Project>
