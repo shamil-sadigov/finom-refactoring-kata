@@ -20,7 +20,8 @@ namespace ReportService.Application.Resolvers.SalaryResolver
             string employeeInn, 
             CancellationToken token)
         {
-            // Add null checks
+            employeeBuhCode.ThrowIfNull();
+            employeeInn.ThrowIfNull();
             
             var request = new GetEmployeeSalaryRequest(employeeBuhCode);
             
@@ -31,7 +32,8 @@ namespace ReportService.Application.Resolvers.SalaryResolver
             var salaryString = await response.Content.ReadAsStringAsync(token);
             
             if (!int.TryParse(salaryString, out var parsedSalary))
-                throw new InvalidOperationException("Returned salary has invalid format");
+                throw new InvalidOperationException(
+                    $"Returned salary for buhCode '{employeeBuhCode}' has invalid format");
 
             return parsedSalary;
         }
