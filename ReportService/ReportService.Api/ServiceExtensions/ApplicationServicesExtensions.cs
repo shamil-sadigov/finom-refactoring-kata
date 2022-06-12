@@ -15,7 +15,7 @@ public static class ApplicationServicesExtensions
         this IServiceCollection services, 
         IConfiguration configuration)
     {
-        services.AddSingleton<EmployeeModelTransformation>();
+        services.AddSingleton<EmployeeTransformation>();
         services.AddSingleton<IReportWriter, ReportWriter>();
         services.AddSingleton<IReportInfoProvider, ReportInfoProvider>();
             

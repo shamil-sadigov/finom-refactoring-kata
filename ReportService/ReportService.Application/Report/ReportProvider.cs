@@ -4,18 +4,18 @@ namespace ReportService.Application.Report;
 
 public class ReportProvider : IReportProvider
 {
-    private readonly EmployeeModelTransformation _employeeModelTransformation;
+    private readonly EmployeeTransformation _employeeTransformation;
     private readonly IEmployeeRepository _employeeRepository;
     private readonly IReportInfoProvider _reportInfoProvider;
     private readonly IReportWriter _reportWriter;
 
     public ReportProvider(
-        EmployeeModelTransformation employeeModelTransformation, 
+        EmployeeTransformation employeeTransformation, 
         IEmployeeRepository employeeRepository,
         IReportInfoProvider reportInfoProvider,
         IReportWriter reportWriter)
     {
-        _employeeModelTransformation = employeeModelTransformation;
+        _employeeTransformation = employeeTransformation;
         _employeeRepository = employeeRepository;
         _reportInfoProvider = reportInfoProvider;
         _reportWriter = reportWriter;
@@ -43,7 +43,7 @@ public class ReportProvider : IReportProvider
             await _employeeRepository.GetAllAsync(cancellationToken);
 
         EmployeeReportItem[] employeeReportItems =
-            await _employeeModelTransformation.TransformToReportableItemsAsync(employees, cancellationToken);
+            await _employeeTransformation.TransformToReportableItemsAsync(employees, cancellationToken);
 
         await using (var reportStream = File.CreateText(reportInfo.Location))
         {

@@ -6,12 +6,12 @@ namespace ReportService.Application;
 /// <summary>
 /// Responsible for transforming employee to reportable items
 /// </summary>
-public sealed class EmployeeModelTransformation
+public sealed class EmployeeTransformation
 {
     private readonly IEmployeeBuhCodeResolver _employeeBuhCodeResolver;
     private readonly IEmployeeSalaryResolver _salaryResolver;
 
-    public EmployeeModelTransformation(
+    public EmployeeTransformation(
         IEmployeeBuhCodeResolver employeeBuhCodeResolver, 
         IEmployeeSalaryResolver salaryResolver)
     {

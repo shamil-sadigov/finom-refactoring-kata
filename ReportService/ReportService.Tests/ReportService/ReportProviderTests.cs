@@ -66,7 +66,7 @@ public class ReportProviderTests:IDisposable
         var (employeeSalaryResolver, employeeBuhCodeResolver) = CreateMocks();
         
         return new ReportProvider(
-            new EmployeeModelTransformation(employeeBuhCodeResolver, employeeSalaryResolver),
+            new EmployeeTransformation(employeeBuhCodeResolver, employeeSalaryResolver),
             InMemoryRepository.WithCollection(EmployeeTestData.EmployeeDataModels),
             new ReportInfoProvider(_reportsRootDirectory),
             reportWriter ?? new ReportWriter());
