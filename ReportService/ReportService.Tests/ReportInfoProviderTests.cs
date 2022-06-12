@@ -6,6 +6,14 @@ namespace ReportService.Tests;
 
 public class ReportInfoProviderTests
 {
+    private readonly string _reportsRootDirectory;
+
+    public ReportInfoProviderTests()
+    {
+        _reportsRootDirectory = Path.Combine(Directory.GetCurrentDirectory(), "reports");
+        Directory.CreateDirectory(_reportsRootDirectory);
+    }
+    
     [Theory]
     [InlineData(2020, 09)]
     [InlineData(2018, 05)]
@@ -13,11 +21,11 @@ public class ReportInfoProviderTests
     public void Should_return_expected_report_location(int year, int month)
     {
         // Arrange
-        var reportInfoProvider = new ReportInfoProvider();
+        var reportInfoProvider = new ReportInfoProvider(_reportsRootDirectory);
 
         var expectedReportLocation = Path.Combine(
-            Directory.GetCurrentDirectory(), 
-            @$"reports\{year}\accounting-report-{year}-{month}.txt");
+            _reportsRootDirectory, 
+            @$"{year}\accounting-report-{year}-{month}.txt");
         
         // Act
         ReportInfo reportInfo = reportInfoProvider.GetReportInfo(year, month);
@@ -33,7 +41,7 @@ public class ReportInfoProviderTests
     [InlineData(2010, -3)]
     public void Cannot_get_report_info_when_provided_time_is_invalid(int year, int month)
     {
-        var reportInfoProvider = new ReportInfoProvider();
+        var reportInfoProvider = new ReportInfoProvider(_reportsRootDirectory);
         
         reportInfoProvider.Invoking(x => x.GetReportInfo(year, month))
             .Should()
