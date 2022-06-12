@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ReportService.Application;
@@ -15,9 +16,12 @@ public static class ApplicationServicesExtensions
         this IServiceCollection services, 
         IConfiguration configuration)
     {
+        var reportDirectoryRoot = GetDirectoryPreparedForReports(configuration);
+        
         services.AddSingleton<EmployeeTransformation>();
         services.AddSingleton<IReportWriter, ReportWriter>();
-        services.AddSingleton<IReportInfoProvider, ReportInfoProvider>();
+        services.AddSingleton<IReportInfoProvider, ReportInfoProvider>(
+            _ => new ReportInfoProvider(reportDirectoryRoot));
             
         services.AddScoped<IReportProvider, ReportProvider>();
             
@@ -31,5 +35,13 @@ public static class ApplicationServicesExtensions
             client => client.BaseAddress = new Uri(employeeBuhCodeServiceUri, UriKind.Absolute));
         
         return services;
+    }
+
+    private static string GetDirectoryPreparedForReports(IConfiguration configuration)
+    {
+        var reportsDirectoryName = configuration.GetValue<string>("ReportsUploadDirectoryName").ThrowIfNull();
+        var reportDirectoryRoot = Path.Combine(Directory.GetCurrentDirectory(), reportsDirectoryName);
+        Directory.CreateDirectory(reportDirectoryRoot);
+        return reportDirectoryRoot;
     }
 }
