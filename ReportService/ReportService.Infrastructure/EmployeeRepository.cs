@@ -14,13 +14,13 @@ public class EmployeeRepository:IEmployeeRepository
     
     // Можно конечно результат запроса кешировать, но не известно о том как часто обновляется таблица
     // может быть несогласованность данных
-    // и как следствие не известно какую стретегию ивалидации выбрать
+    // и как следствие не известно какую стретегию ивалидации кеша выбрать
     // Оставим как есть.
     
     public async Task<IReadOnlyList<EmployeeDataModel>> GetAllAsync(CancellationToken cancellationToken)
     {
-        // No need to Dispose connection, it's sharable and will be disposed at the end of scope lifetime
-        var dbConnection = await _dbConnectionFactory.GetOrCreateConnection();
+        // No need to Dispose connection, it can be sharable and will be disposed at the end of a scope lifetime
+        var dbConnection = await _dbConnectionFactory.GetOrCreateConnectionAsync();
         
         var employees = await dbConnection.QueryAsync<EmployeeDataModel>(
             @"SELECT employees.name AS Name, 

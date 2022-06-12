@@ -14,9 +14,9 @@ public class NgSqlConnectionFactory : IDbConnectionFactory, IDisposable, IAsyncD
         _connectionString = connectionString.ThrowIfNull();
     }
     
-    public async Task<IDbConnection> GetOrCreateConnection()
+    public async Task<IDbConnection> GetOrCreateConnectionAsync()
     {
-        if (_connection is {State: ConnectionState.Open})
+        if (_connection is { State: ConnectionState.Open })
             return _connection;
         
         _connection = new NpgsqlConnection(_connectionString);
