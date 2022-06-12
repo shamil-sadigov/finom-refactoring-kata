@@ -16,23 +16,20 @@ public static class ApplicationServicesExtensions
         this IServiceCollection services, 
         IConfiguration configuration)
     {
-        var reportDirectoryRoot = GetDirectoryPreparedForReports(configuration);
-        
-        services.AddSingleton<EmployeeTransformation>();
-        services.AddSingleton<IReportWriter, ReportWriter>();
-        services.AddSingleton<IReportInfoProvider, ReportInfoProvider>(
-            _ => new ReportInfoProvider(reportDirectoryRoot));
-            
-        services.AddScoped<IReportProvider, ReportProvider>();
-            
         var employeeSalaryServiceUri = configuration.GetValue<string>("EmployeeSalaryServiceUri").ThrowIfNull();
         var employeeBuhCodeServiceUri = configuration.GetValue<string>("EmployeeBuhCodeServiceUri").ThrowIfNull();
-            
+        var reportDirectoryRoot = GetDirectoryPreparedForReports(configuration);
+
         services.AddHttpClient<IEmployeeSalaryResolver, EmployeeSalaryResolver>(
             client => client.BaseAddress = new Uri(employeeSalaryServiceUri, UriKind.Absolute));
             
         services.AddHttpClient<IEmployeeBuhCodeResolver, EmployeeBuhCodeResolver>(
             client => client.BaseAddress = new Uri(employeeBuhCodeServiceUri, UriKind.Absolute));
+        
+         services.AddScoped<EmployeeTransformation>()
+            .AddSingleton<IReportWriter, ReportWriter>()
+            .AddSingleton<IReportInfoProvider, ReportInfoProvider>(_ => new ReportInfoProvider(reportDirectoryRoot))
+            .AddScoped<IReportProvider, ReportProvider>();
         
         return services;
     }
