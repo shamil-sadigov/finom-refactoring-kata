@@ -4,6 +4,18 @@ namespace ReportService.Application.Report;
 
 public class ReportInfoProvider : IReportInfoProvider
 {
+    private readonly string _reportDirectoryRoot;
+
+    public ReportInfoProvider(string reportDirectoryRoot)
+    {
+        reportDirectoryRoot.ThrowIfNull();
+        
+        if (!Directory.Exists(reportDirectoryRoot))
+            throw new DirectoryNotFoundException($"Directory '{reportDirectoryRoot}' is not found");
+
+        _reportDirectoryRoot = reportDirectoryRoot;
+    }
+    
     /// <summary>
     /// Builds and returns path where report should be uploaded.
     /// </summary>
@@ -11,16 +23,25 @@ public class ReportInfoProvider : IReportInfoProvider
     {
         ValidateArguments(year, month);
 
-        var fileName = $"accounting-report-{year}-{month}.txt";
+        var reportFileName = $"accounting-report-{year}-{month}.txt";
+        var reportDirectory = ProvideReportDirectory(year);
 
-        var destinationPath = Path.Combine(
-            Directory.GetCurrentDirectory(), 
-            "reports", 
-            year.ToString(),
-            fileName);
+        var reportLocation = Path.Combine(reportDirectory, reportFileName);
+        
+        // reportLocation looks like => '..\reports\accounting-report-2018-05.txt'
+        return new ReportInfo(reportLocation, reportFileName);
+    }
 
-        // destination path looks like => '..\reports\2018\accounting-report-2018-05.txt'
-        return new ReportInfo(destinationPath, fileName);
+    private string ProvideReportDirectory(int year)
+    {
+        var reportDirectory = Path.Combine(
+            _reportDirectoryRoot,
+            year.ToString());
+
+        if (!Directory.Exists(reportDirectory))
+            Directory.CreateDirectory(reportDirectory);
+        
+        return reportDirectory;
     }
 
     private static void ValidateArguments(int year, int month)
