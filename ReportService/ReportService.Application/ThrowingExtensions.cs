@@ -4,7 +4,7 @@ namespace ReportService.Application;
 
 public static class ThrowingExtensions
 {
-    public static void ThrowIfNull(
+    public static string ThrowIfNull(
         this string str,
         [CallerArgumentExpression("str")] string argName = "")
     {

@@ -38,14 +38,13 @@ namespace ReportService.Api.Controllers
     [Route("api/[controller]")]
     public class ReportController : Controller
     {
-        private readonly ReportProvider _reportProvider;
+        private readonly IReportProvider _reportProvider;
 
-        public ReportController(ReportProvider reportProvider)
+        public ReportController(IReportProvider reportProvider)
         {
             _reportProvider = reportProvider;
         }
         
-        // TODO: Add exception handling
         [HttpGet("{year}/{month}")]
         public async Task<IActionResult> Download(int year, int month, CancellationToken cancellationToken)
         {

@@ -5,8 +5,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using ReportService.Application;
+using ReportService.Application.Report;
+using ReportService.Application.Report.Abstractions;
 using ReportService.Application.Resolvers.BuhCodeResolver;
 using ReportService.Application.Resolvers.SalaryResolver;
+using ReportService.Infrastructure;
 
 namespace ReportService.Api
 {
@@ -23,15 +26,30 @@ namespace ReportService.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
-            services.AddSingleton<IEmployeeSalaryResolver, EmployeeSalaryResolver>();
-            services.AddSingleton<IEmployeeBuhCodeResolver, EmployeeBuhCodeResolver>();
+            
             services.AddSingleton<EmployeeModelTransformation>();
-
+            services.AddSingleton<IReportWriter, ReportWriter>();
+            services.AddSingleton<IReportInfoProvider, ReportInfoProvider>();
+            
+            services.AddScoped<IReportProvider, ReportProvider>();
+            
+            var employeeSalaryServiceUri = Configuration.GetValue<string>("EmployeeSalaryServiceUri").ThrowIfNull();
+            var employeeBuhCodeServiceUri = Configuration.GetValue<string>("EmployeeBuhCodeServiceUri").ThrowIfNull();
+            
             services.AddHttpClient<IEmployeeSalaryResolver, EmployeeSalaryResolver>(
-                httpClient => httpClient.BaseAddress = new Uri("http://salary.local", UriKind.Absolute));
+                client => client.BaseAddress = new Uri(employeeSalaryServiceUri, UriKind.Absolute));
             
             services.AddHttpClient<IEmployeeBuhCodeResolver, EmployeeBuhCodeResolver>(
-                httpClient => httpClient.BaseAddress = new Uri("http://buh.local", UriKind.Absolute));
+                client => client.BaseAddress = new Uri(employeeBuhCodeServiceUri, UriKind.Absolute));
+            
+            // Infra
+
+            var connectionString = Configuration.GetConnectionString("PostgreSql").ThrowIfNull();
+
+            services.AddScoped<IDbConnectionFactory, NgSqlConnectionFactory>(
+                _ => new NgSqlConnectionFactory(connectionString));
+
+            services.AddScoped<IEmployeeRepository, EmployeeRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

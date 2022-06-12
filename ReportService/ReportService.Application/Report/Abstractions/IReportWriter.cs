@@ -1,6 +1,5 @@
 ﻿namespace ReportService.Application.Report.Abstractions;
 
-// TODO: Register in DI container
 public interface IReportWriter
 {
     /// <summary>

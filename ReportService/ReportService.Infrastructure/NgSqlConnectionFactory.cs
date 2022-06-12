@@ -1,5 +1,6 @@
 using System.Data;
 using Npgsql;
+using ReportService.Application;
 
 namespace ReportService.Infrastructure;
 
@@ -7,11 +8,10 @@ public class NgSqlConnectionFactory : IDbConnectionFactory, IDisposable, IAsyncD
 {
     private readonly string _connectionString;
     private NpgsqlConnection? _connection;
-
-    // "Host=192.168.99.100;Username=postgres;Password=1;Database=employee"
+    
     public NgSqlConnectionFactory(string connectionString)
     {
-        _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
+        _connectionString = connectionString.ThrowIfNull();
     }
     
     public async Task<IDbConnection> GetOrCreateConnection()

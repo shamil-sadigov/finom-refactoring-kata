@@ -8,6 +8,9 @@ public readonly struct FileLocation
         
         if (!Path.IsPathFullyQualified(value))
             throw new ArgumentException("File should have valid path format", nameof(value));
+        
+        if (!Path.HasExtension(value))
+            throw new ArgumentException("Should have file extensions", nameof(value));
 
         Value = value;
     }
