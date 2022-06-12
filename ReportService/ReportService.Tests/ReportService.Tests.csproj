@@ -28,10 +28,10 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Update="ReportWriters\Expected_report.txt">
+      <None Update="ReportWriters\ReportExample.txt">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
-      <None Update="ReportService\Expected_report.txt">
+      <None Update="ReportService\ReportExample.txt">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
     </ItemGroup>

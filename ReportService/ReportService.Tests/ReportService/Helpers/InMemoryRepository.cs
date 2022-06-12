@@ -1,4 +1,7 @@
-﻿using ReportService.Application;
+﻿using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using ReportService.Application;
 
 namespace ReportService.Tests.ReportService.Helpers;
 

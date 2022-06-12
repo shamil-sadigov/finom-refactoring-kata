@@ -1,4 +1,7 @@
-﻿using FluentAssertions;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
+using FluentAssertions;
 using ReportService.Application;
 using ReportService.Application.Report;
 
@@ -42,7 +45,7 @@ public class ReportWriterTests
 
     private static async Task<string> GetExpectedReport()
     {
-        var report = Path.Combine(Directory.GetCurrentDirectory(), "ReportWriters\\Expected_report.txt");
+        var report = Path.Combine(Directory.GetCurrentDirectory(), "ReportWriters\\ReportExample.txt");
 
         var expectedReport = await File.ReadAllTextAsync(report);
         return expectedReport;

@@ -1,4 +1,6 @@
-﻿using ReportService.Application;
+﻿using System.Collections.Generic;
+using System.Linq;
+using ReportService.Application;
 
 namespace ReportService.Tests.ReportService.Helpers;
 

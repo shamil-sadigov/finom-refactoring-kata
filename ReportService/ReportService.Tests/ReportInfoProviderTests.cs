@@ -1,16 +1,21 @@
 
+using System;
+using System.IO;
 using FluentAssertions;
 using ReportService.Application.Report;
 
 namespace ReportService.Tests;
 
-public class ReportInfoProviderTests
+public class ReportInfoProviderTests:IDisposable
 {
     private readonly string _reportsRootDirectory;
 
     public ReportInfoProviderTests()
     {
-        _reportsRootDirectory = Path.Combine(Directory.GetCurrentDirectory(), "reports");
+        _reportsRootDirectory = Path.Combine(
+            Directory.GetCurrentDirectory(), 
+            $"reports/{nameof(ReportInfoProviderTests)}");
+        
         Directory.CreateDirectory(_reportsRootDirectory);
     }
     
@@ -31,7 +36,7 @@ public class ReportInfoProviderTests
         ReportInfo reportInfo = reportInfoProvider.GetReportInfo(year, month);
         
         // Assert
-        reportInfo.Location.Should().Be(expectedReportLocation);
+        reportInfo.Location.Value.Should().Be(expectedReportLocation);
     }
     
     [Theory]
@@ -46,5 +51,11 @@ public class ReportInfoProviderTests
         reportInfoProvider.Invoking(x => x.GetReportInfo(year, month))
             .Should()
             .Throw<ArgumentOutOfRangeException>();
+    }
+
+    public void Dispose()
+    {
+        if (Directory.Exists(_reportsRootDirectory)) 
+            Directory.Delete(_reportsRootDirectory, true);
     }
 }

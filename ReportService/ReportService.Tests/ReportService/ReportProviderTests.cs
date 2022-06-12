@@ -1,4 +1,8 @@
-﻿using FluentAssertions;
+﻿using System;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
+using FluentAssertions;
 using Moq;
 using ReportService.Application;
 using ReportService.Application.Report;
@@ -15,7 +19,7 @@ public class ReportProviderTests:IDisposable
 
     public ReportProviderTests()
     {
-        _reportsRootDirectory = Path.Combine(Directory.GetCurrentDirectory(), "reports");
+        _reportsRootDirectory = Path.Combine(Directory.GetCurrentDirectory(), $"reports/{nameof(ReportProviderTests)}");
 
         Directory.CreateDirectory(_reportsRootDirectory);
     }
@@ -32,7 +36,10 @@ public class ReportProviderTests:IDisposable
         
         // Assert
         string actualReportFromText = await report.AsTextAsync();
-        string actualReportFromStream = await new StreamReader(report.AsStream()).ReadToEndAsync();
+        string actualReportFromStream;
+        
+        using (var reportStream = report.AsStream())
+            actualReportFromStream = await new StreamReader(reportStream).ReadToEndAsync();
         
         actualReportFromText.Should().Be(expectedReport);
         actualReportFromStream.Should().Be(expectedReport);
@@ -89,7 +96,7 @@ public class ReportProviderTests:IDisposable
     
     private static async Task<string> GetExpectedReportAsync()
     {
-        var report = Path.Combine(Directory.GetCurrentDirectory(), "ReportService\\Expected_report.txt");
+        var report = Path.Combine(Directory.GetCurrentDirectory(), "ReportService\\ReportExample.txt");
         var expectedReport = await File.ReadAllTextAsync(report);
         return expectedReport;
     }
