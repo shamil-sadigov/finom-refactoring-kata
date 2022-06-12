@@ -18,7 +18,7 @@ public class ReportWriterSpyDecorator:IReportWriter
         TextWriter textWriter,
         int year,
         int month,
-        IReadOnlyCollection<EmployeeReportItem> employees)
+        IReadOnlyCollection<EmployeeReportableModel> employees)
     {
         await _decoratee.WriteAsync(textWriter, year, month, employees);
         ++ReportGeneratedCount;

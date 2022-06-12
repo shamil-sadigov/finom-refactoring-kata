@@ -2,7 +2,7 @@
 
 namespace ReportService.Application;
 
-public static class ThrowingExtensions
+public static class StringExtensions
 {
     public static string ThrowIfNull(
         this string str,
@@ -10,5 +10,7 @@ public static class ThrowingExtensions
     {
         if (string.IsNullOrWhiteSpace(str)) 
             throw new ArgumentNullException(argName);
+        
+        return str;
     }
 }

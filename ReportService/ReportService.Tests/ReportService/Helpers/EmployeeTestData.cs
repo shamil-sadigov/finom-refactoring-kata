@@ -4,7 +4,7 @@ namespace ReportService.Tests.ReportService.Helpers;
 
 public static class EmployeeTestData
 {
-    public static readonly List<EmployeeReportItem> EmployeesReportItems = new()
+    public static readonly List<EmployeeReportableModel> EmployeesReportItems = new()
     {
         new("Ernest Hemingway", "1", "Писатели", 2000),
 

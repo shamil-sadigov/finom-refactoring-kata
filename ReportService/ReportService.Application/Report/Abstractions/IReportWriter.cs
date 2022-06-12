@@ -9,5 +9,5 @@ public interface IReportWriter
         TextWriter textWriter,
         int year,
         int month,
-        IReadOnlyCollection<EmployeeReportItem> employees);
+        IReadOnlyCollection<EmployeeReportableModel> employees);
 }

@@ -13,7 +13,7 @@ public sealed class ReportWriter:IReportWriter
         TextWriter textWriter, 
         int year,
         int month, 
-        IReadOnlyCollection<EmployeeReportItem> employees)
+        IReadOnlyCollection<EmployeeReportableModel> employees)
     {
         await WriteHeaderAsync(textWriter, year, month);
         
@@ -32,7 +32,7 @@ public sealed class ReportWriter:IReportWriter
     
     private async Task<int> WriteBodyAsync(
         TextWriter streamWriter, 
-        IReadOnlyCollection<EmployeeReportItem> employees)
+        IReadOnlyCollection<EmployeeReportableModel> employees)
     {
         var organizationSalarySum = 0;
         

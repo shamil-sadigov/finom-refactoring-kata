@@ -19,11 +19,11 @@ public sealed class EmployeeTransformation
         _salaryResolver = salaryResolver;
     }
     
-    public Task<EmployeeReportItem[]> TransformToReportableItemsAsync(
+    public Task<EmployeeReportableModel[]> TransformToReportableItemsAsync(
         IReadOnlyCollection<EmployeeDataModel> employees,
         CancellationToken cancellationToken)
     {
-        List<Task<EmployeeReportItem>> employeeTransformationTasks = new(employees.Count);
+        List<Task<EmployeeReportableModel>> employeeTransformationTasks = new(employees.Count);
             
         foreach (var employeeDataModel in employees)
         {
@@ -34,7 +34,7 @@ public sealed class EmployeeTransformation
         return Task.WhenAll(employeeTransformationTasks);
     }
 
-    private Task<EmployeeReportItem> TransformToReportableItemAsync(
+    private Task<EmployeeReportableModel> TransformToReportableItemAsync(
         EmployeeDataModel employeeData, 
         CancellationToken cancellationToken)
     {
@@ -59,7 +59,7 @@ public sealed class EmployeeTransformation
                 var employeeSalary =
                     await _salaryResolver.GetSalaryAsync(employeeBuhCode, employeeData.Inn, cancellationToken);
 
-                return new EmployeeReportItem(employeeData.Name, employeeData.Inn, employeeData.Department, employeeSalary);
+                return new EmployeeReportableModel(employeeData.Name, employeeData.Inn, employeeData.Department, employeeSalary);
             }, cancellationToken).Unwrap();
             
         return convertToReportableItemTask;

@@ -60,7 +60,6 @@ public class ReportProviderTests:IDisposable
             .Be(1, because: "We should not generate the same report more than once");
     }
     
-    // TODO: Extract it to builder object
     private ReportProvider CreateSut(IReportWriter? reportWriter = null)
     {
         var (employeeSalaryResolver, employeeBuhCodeResolver) = CreateMocks();

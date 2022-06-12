@@ -42,7 +42,7 @@ public class ReportProvider : IReportProvider
         IReadOnlyList<EmployeeDataModel> employees = 
             await _employeeRepository.GetAllAsync(cancellationToken);
 
-        EmployeeReportItem[] employeeReportItems =
+        EmployeeReportableModel[] employeeReportItems =
             await _employeeTransformation.TransformToReportableItemsAsync(employees, cancellationToken);
 
         await using (var reportStream = File.CreateText(reportInfo.Location))

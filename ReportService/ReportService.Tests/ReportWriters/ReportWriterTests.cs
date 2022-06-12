@@ -24,9 +24,9 @@ public class ReportWriterTests
         actualReport.Should().Be(expectedReport);
     }
 
-    private static List<EmployeeReportItem> CreateSampleEmployees()
+    private static List<EmployeeReportableModel> CreateSampleEmployees()
     {
-        var employees = new List<EmployeeReportItem>
+        var employees = new List<EmployeeReportableModel>
         {
             new("Ernest Hemingway", "1", "Писатели", 2000),
 
