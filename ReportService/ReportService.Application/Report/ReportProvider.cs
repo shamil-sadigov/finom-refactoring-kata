@@ -26,9 +26,13 @@ public class ReportProvider : IReportProvider
         cancellationToken.ThrowIfCancellationRequested();
         
         ReportInfo reportInfo = _reportInfoProvider.GetReportInfo(year, month);
-        
-        if (ReportWasAlreadyCreatedEarlier(reportInfo, out var existingReport)) 
-            return existingReport!;
+
+        if (reportInfo.ReportExists)
+        {
+            // Отчет уже был ранее софрмирован и сохранен, а значит нет необходимости создавать новый.
+            // Возвращаем сушествующий!
+            return new Report(reportInfo.FileName, reportInfo.Location);
+        }
 
         return await CreateNewReport(reportInfo, year, month, cancellationToken);
     }
@@ -51,17 +55,5 @@ public class ReportProvider : IReportProvider
         }
         
         return new Report(reportInfo.FileName, reportInfo.Location);
-    }
-
-    private static bool ReportWasAlreadyCreatedEarlier(ReportInfo reportInfo, out Report? localFileReport)
-    {
-        if (reportInfo.ReportExists)
-        {
-            localFileReport = new Report(reportInfo.FileName, reportInfo.Location);
-            return true;
-        }
-
-        localFileReport = null;
-        return false;
     }
 }

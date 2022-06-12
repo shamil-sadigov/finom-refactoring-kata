@@ -19,7 +19,7 @@ namespace ReportService.Api.Controllers
         [HttpGet("{year:int}/{month:int}")]
         public async Task<IActionResult> Download(int year, int month, CancellationToken cancellationToken)
         {
-            var report =  await _reportProvider.CreateReportAsync(year, month, cancellationToken);
+            var report = await _reportProvider.CreateReportAsync(year, month, cancellationToken);
             
             return File(report.AsStream(), "application/octet-stream", report.FileName);
         }

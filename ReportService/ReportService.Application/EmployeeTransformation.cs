@@ -56,7 +56,7 @@ public sealed class EmployeeTransformation
                 // А откуда же тогда удаленный сервис знает за какой период зарплату мы хотим получить ?
                 // Это надо обусудить
                 
-                var employeeSalary =
+                var employeeSalary = 
                     await _salaryResolver.GetSalaryAsync(employeeBuhCode, employee.Inn, cancellationToken);
 
                 return new EmployeeReportableModel(employee.Name, employee.Inn, employee.Department, employeeSalary);
