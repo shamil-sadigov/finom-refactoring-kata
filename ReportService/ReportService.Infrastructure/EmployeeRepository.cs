@@ -19,6 +19,7 @@ public class EmployeeRepository:IEmployeeRepository
     
     public async Task<IReadOnlyList<EmployeeDataModel>> GetAllAsync(CancellationToken cancellationToken)
     {
+        // No need to Dispose connection, it's sharable and will be disposed at the end of scope lifetime
         var dbConnection = await _dbConnectionFactory.GetOrCreateConnection();
         
         var employees = await dbConnection.QueryAsync<EmployeeDataModel>(

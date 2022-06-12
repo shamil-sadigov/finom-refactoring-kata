@@ -16,9 +16,6 @@ public class ReportInfoProvider : IReportInfoProvider
         _reportDirectoryRoot = reportDirectoryRoot;
     }
     
-    /// <summary>
-    /// Builds and returns path where report should be uploaded.
-    /// </summary>
     public ReportInfo GetReportInfo(int year, int month)
     {
         ValidateArguments(year, month);

@@ -27,8 +27,8 @@ public class ReportProvider : IReportProvider
         
         ReportInfo reportInfo = _reportInfoProvider.GetReportInfo(year, month);
         
-        if (ReportWasAlreadyCreatedPreviously(reportInfo, out var cachedReport)) 
-            return cachedReport!;
+        if (ReportWasAlreadyCreatedEarlier(reportInfo, out var existingReport)) 
+            return existingReport!;
 
         return await CreateNewReport(reportInfo, year, month, cancellationToken);
     }
@@ -39,21 +39,21 @@ public class ReportProvider : IReportProvider
         int month, 
         CancellationToken cancellationToken)
     {
-        IReadOnlyList<EmployeeDataModel> employees = 
-            await _employeeRepository.GetAllAsync(cancellationToken);
+        IReadOnlyList<EmployeeDataModel> employeesDataModels 
+            = await _employeeRepository.GetAllAsync(cancellationToken);
 
-        EmployeeReportableModel[] employeeReportItems =
-            await _employeeTransformation.TransformToReportableItemsAsync(employees, cancellationToken);
+        EmployeeReportableModel[] employeeReportableModels =
+            await _employeeTransformation.TransformToReportableModelsAsync(employeesDataModels, cancellationToken);
 
         await using (var reportStream = File.CreateText(reportInfo.Location))
         {
-            await _reportWriter.WriteAsync(reportStream, year, month, employeeReportItems);
+            await _reportWriter.WriteAsync(reportStream, year, month, employeeReportableModels);
         }
         
         return new Report(reportInfo.FileName, reportInfo.Location);
     }
 
-    private static bool ReportWasAlreadyCreatedPreviously(ReportInfo reportInfo, out Report? localFileReport)
+    private static bool ReportWasAlreadyCreatedEarlier(ReportInfo reportInfo, out Report? localFileReport)
     {
         if (reportInfo.ReportExists)
         {

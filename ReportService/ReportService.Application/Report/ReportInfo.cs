@@ -1,4 +1,6 @@
-﻿namespace ReportService.Application.Report;
+﻿using ReportService.Application.Report.ValueObjects;
+
+namespace ReportService.Application.Report;
 
 public sealed class ReportInfo
 {

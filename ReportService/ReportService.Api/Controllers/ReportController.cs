@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using ReportService.Application.Report;
+using ReportService.Application.Report.Abstractions;
 
 /*
  *  NOTES:
@@ -35,6 +35,7 @@ using ReportService.Application.Report;
 
 namespace ReportService.Api.Controllers
 {
+    [ApiController]
     [Route("api/[controller]")]
     public class ReportController : Controller
     {
@@ -45,14 +46,12 @@ namespace ReportService.Api.Controllers
             _reportProvider = reportProvider;
         }
         
-        [HttpGet("{year}/{month}")]
+        [HttpGet("{year:int}/{month:int}")]
         public async Task<IActionResult> Download(int year, int month, CancellationToken cancellationToken)
         {
             var report =  await _reportProvider.CreateReportAsync(year, month, cancellationToken);
             
-            var response = File(report.AsStream(), "application/octet-stream", report.FileName);
-            
-            return response;
+            return File(report.AsStream(), "application/octet-stream", report.FileName);
         }
     }
 }

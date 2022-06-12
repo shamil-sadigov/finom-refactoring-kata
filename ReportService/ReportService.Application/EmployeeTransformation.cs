@@ -4,7 +4,7 @@ using ReportService.Application.Resolvers.SalaryResolver;
 namespace ReportService.Application;
 
 /// <summary>
-/// Responsible for transforming employee to reportable items
+/// Responsible for transforming employee to reportable items based on which reports can be generated
 /// </summary>
 public sealed class EmployeeTransformation
 {
@@ -19,33 +19,33 @@ public sealed class EmployeeTransformation
         _salaryResolver = salaryResolver;
     }
     
-    public Task<EmployeeReportableModel[]> TransformToReportableItemsAsync(
+    public Task<EmployeeReportableModel[]> TransformToReportableModelsAsync(
         IReadOnlyCollection<EmployeeDataModel> employees,
         CancellationToken cancellationToken)
     {
         List<Task<EmployeeReportableModel>> employeeTransformationTasks = new(employees.Count);
             
-        foreach (var employeeDataModel in employees)
+        foreach (var employee in employees)
         {
-            var transformationTask = TransformToReportableItemAsync(employeeDataModel, cancellationToken);
+            var transformationTask = TransformToReportableModelAsync(employee, cancellationToken);
             employeeTransformationTasks.Add(transformationTask);
         }
 
         return Task.WhenAll(employeeTransformationTasks);
     }
 
-    private Task<EmployeeReportableModel> TransformToReportableItemAsync(
-        EmployeeDataModel employeeData, 
+    private Task<EmployeeReportableModel> TransformToReportableModelAsync(
+        EmployeeDataModel employee, 
         CancellationToken cancellationToken)
     {
         var convertToReportableItemTask = _employeeBuhCodeResolver
-            .GetEmployeeBuhcodeAsync(employeeData.Inn, cancellationToken)
+            .GetEmployeeBuhcodeAsync(employee.Inn, cancellationToken)
             .ContinueWith(async buhCodeResolverTask =>
             {
                 if (!buhCodeResolverTask.IsCompletedSuccessfully)
                 {
                     throw new InvalidOperationException(
-                        $"Something went wrong during getting employee buh code by Inn : {employeeData.Inn}",
+                        $"Something went wrong during getting employee buh code by Inn : {employee.Inn}",
                         buhCodeResolverTask.Exception);
                 }
 
@@ -57,9 +57,9 @@ public sealed class EmployeeTransformation
                 // Это надо обусудить
                 
                 var employeeSalary =
-                    await _salaryResolver.GetSalaryAsync(employeeBuhCode, employeeData.Inn, cancellationToken);
+                    await _salaryResolver.GetSalaryAsync(employeeBuhCode, employee.Inn, cancellationToken);
 
-                return new EmployeeReportableModel(employeeData.Name, employeeData.Inn, employeeData.Department, employeeSalary);
+                return new EmployeeReportableModel(employee.Name, employee.Inn, employee.Department, employeeSalary);
             }, cancellationToken).Unwrap();
             
         return convertToReportableItemTask;

@@ -1,4 +1,4 @@
-﻿namespace ReportService.Application.Report;
+﻿namespace ReportService.Application.Report.ValueObjects;
 
 public readonly struct FileName
 {
