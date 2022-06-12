@@ -53,12 +53,12 @@ public class ReportProviderTests:IDisposable
     {
         // Arrange
         var reportWriterSpy = new ReportWriterSpyDecorator(new ReportWriter());
-        var reportProvider = CreateSut(reportWriterSpy);
+        var sut = CreateSut(reportWriterSpy);
 
         // Act
         for (int i = 0; i < reportRequestedTimes; i++)
         {
-            Report report = await reportProvider.CreateReportAsync(year, month, CancellationToken.None);
+            Report report = await sut.CreateReportAsync(year, month, CancellationToken.None);
         }
         
         // Assert

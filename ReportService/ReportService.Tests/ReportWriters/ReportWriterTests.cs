@@ -15,12 +15,12 @@ public class ReportWriterTests
         // Arrange
         var employees = CreateSampleEmployees();
         var expectedReport = await GetExpectedReport();
-        
-        var reportWriter = new ReportWriter();
         var stringWriter = new StringWriter();
         
+        var sut = new ReportWriter();
+        
         // Act
-        await reportWriter.WriteAsync(stringWriter, 2020, 10, employees);
+        await sut.WriteAsync(stringWriter, 2020, 10, employees);
         var actualReport = stringWriter.ToString();
 
         // Assert
