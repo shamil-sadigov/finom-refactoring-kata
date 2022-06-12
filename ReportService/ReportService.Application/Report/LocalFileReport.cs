@@ -9,7 +9,7 @@ public sealed class LocalFileReport:Report
         if (!Path.HasExtension(filePath))
             throw new ArgumentException("Should have extensions", nameof(filePath));
 
-        if (!File.Exists(_filePath))
+        if (!File.Exists(filePath))
             throw new ArgumentException("Such report file doesn't exists", nameof(filePath));
 
         _filePath = filePath;
