@@ -6,13 +6,9 @@ namespace ReportService.Application.Resolvers.SalaryResolver
     {
         private readonly HttpClient _httpClient;
 
-        public EmployeeSalaryResolver()
+        public EmployeeSalaryResolver(HttpClient httpClient)
         {
-            // TODO: Extract uri to appsettings
-            _httpClient = new HttpClient()
-            {
-                BaseAddress = new Uri("http://salary.local", UriKind.Absolute)
-            };
+            _httpClient = httpClient;
         }
         
         public async Task<int> GetSalaryAsync(
@@ -24,6 +20,11 @@ namespace ReportService.Application.Resolvers.SalaryResolver
             employeeInn.ThrowIfNull();
             
             var request = new GetEmployeeSalaryRequest(employeeBuhCode);
+            
+            // вместо того чтобы получать ЗП сотрудника через синхронное http API
+            // я бы предпочел подписаться на события удалленого сервиса и хранить локально
+            // реплику всех зарплат сотрудников дабы избавиться от лишних http обращений.
+            // но пока оставим так.
             
             var response = await _httpClient.PostAsJsonAsync("/api/empcode/" + employeeInn, request, token);
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,6 +26,12 @@ namespace ReportService.Api
             services.AddSingleton<IEmployeeSalaryResolver, EmployeeSalaryResolver>();
             services.AddSingleton<IEmployeeBuhCodeResolver, EmployeeBuhCodeResolver>();
             services.AddSingleton<EmployeeModelTransformation>();
+
+            services.AddHttpClient<IEmployeeSalaryResolver, EmployeeSalaryResolver>(
+                httpClient => httpClient.BaseAddress = new Uri("http://salary.local", UriKind.Absolute));
+            
+            services.AddHttpClient<IEmployeeBuhCodeResolver, EmployeeBuhCodeResolver>(
+                httpClient => httpClient.BaseAddress = new Uri("http://buh.local", UriKind.Absolute));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -2,14 +2,19 @@
 
 public class EmployeeBuhCodeResolver:IEmployeeBuhCodeResolver
 {
-    // TODO: Есть предположение что на каждый inn будет всегда возвращаться один и тот же статичный Code 
-    // поэтому стоит задуматься о кешировании
+    private readonly HttpClient _httpClient;
+
+    public EmployeeBuhCodeResolver(HttpClient httpClient)
+    {
+        _httpClient = httpClient;
+    }
+    
     public async Task<string> GetEmployeeBuhcodeAsync(string employeeInn, CancellationToken cancellationToken)
     {
-            
-        // TODO: Создавать каждый раз новый HttpClient дорого, к тому же он разделяемый и потокобезопасный
-        // стоит вынести в статичное поле
-        var client = new HttpClient();
-        return await client.GetStringAsync("http://buh.local/api/inn/" + employeeInn, cancellationToken);
+        // BuhCode можно было бы кешировать дабы избежать последующих запросов,
+        // но у меня не достаточно данных о том как часто buhCode изменяется,
+        // поэтому оставим как есть
+        
+        return await _httpClient.GetStringAsync("/api/inn/" + employeeInn, cancellationToken);
     }
 }
