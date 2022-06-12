@@ -11,7 +11,7 @@ using ReportService.Application.Resolvers.BuhCodeResolver;
 using ReportService.Application.Resolvers.SalaryResolver;
 using ReportService.Tests.ReportService.Helpers;
 
-namespace ReportService.Tests.ReportService;
+namespace ReportService.Tests.ReportsProvider;
 
 public class ReportProviderTests:IDisposable
 {
@@ -96,7 +96,7 @@ public class ReportProviderTests:IDisposable
     
     private static async Task<string> GetExpectedReportAsync()
     {
-        var report = Path.Combine(Directory.GetCurrentDirectory(), "ReportService\\ReportExample.txt");
+        var report = Path.Combine(Directory.GetCurrentDirectory(), "ReportsProvider\\ReportExample.txt");
         var expectedReport = await File.ReadAllTextAsync(report);
         return expectedReport;
     }

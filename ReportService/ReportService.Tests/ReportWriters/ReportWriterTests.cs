@@ -40,13 +40,13 @@ public class ReportWriterTests
             new("Ada Lovelace", "7", "IT", 6000),
             new("Tim Berners Lee", "5", "IT", 8000),
         };
+        
         return employees;
     }
 
     private static async Task<string> GetExpectedReport()
     {
         var report = Path.Combine(Directory.GetCurrentDirectory(), "ReportWriters\\ReportExample.txt");
-
         var expectedReport = await File.ReadAllTextAsync(report);
         return expectedReport;
     }

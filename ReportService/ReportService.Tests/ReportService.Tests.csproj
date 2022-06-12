@@ -31,7 +31,7 @@
       <None Update="ReportWriters\ReportExample.txt">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
-      <None Update="ReportService\ReportExample.txt">
+      <None Update="ReportsProvider\ReportExample.txt">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
     </ItemGroup>
