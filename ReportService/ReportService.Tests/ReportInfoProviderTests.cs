@@ -4,7 +4,7 @@ using ReportService.Application.Report;
 
 namespace ReportService.Tests;
 
-public class ReportLocationProviderTests
+public class ReportInfoProviderTests
 {
     [Theory]
     [InlineData(2020, 09)]
@@ -13,17 +13,17 @@ public class ReportLocationProviderTests
     public void Should_return_expected_report_location(int year, int month)
     {
         // Arrange
-        var locationProvider = new ReportInfoProvider();
+        var reportInfoProvider = new ReportInfoProvider();
 
-        var expectedPath = Path.Combine(
+        var expectedReportLocation = Path.Combine(
             Directory.GetCurrentDirectory(), 
-            @$"reports\2020\accounting-report-{year}-{month}.txt");
+            @$"reports\{year}\accounting-report-{year}-{month}.txt");
         
         // Act
-        var filePath = locationProvider.GetReportInfo(year, month);
+        ReportInfo reportInfo = reportInfoProvider.GetReportInfo(year, month);
         
         // Assert
-        filePath.Should().Be(expectedPath);
+        reportInfo.Location.Should().Be(expectedReportLocation);
     }
     
     [Theory]
@@ -31,11 +31,11 @@ public class ReportLocationProviderTests
     [InlineData(0, 05)]
     [InlineData(2010, 15)]
     [InlineData(2010, -3)]
-    public void Cannot_get_report_location_when_provided_time_is_invalid(int year, int month)
+    public void Cannot_get_report_info_when_provided_time_is_invalid(int year, int month)
     {
-        var pathBuilder = new ReportInfoProvider();
+        var reportInfoProvider = new ReportInfoProvider();
         
-        pathBuilder.Invoking(x => x.GetReportInfo(year, month))
+        reportInfoProvider.Invoking(x => x.GetReportInfo(year, month))
             .Should()
             .Throw<ArgumentOutOfRangeException>();
     }
