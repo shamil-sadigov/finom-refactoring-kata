@@ -26,10 +26,13 @@ public class ReportInfoProvider : IReportInfoProvider
         var reportFileName = $"accounting-report-{year}-{month}.txt";
         var reportDirectory = ProvideReportDirectory(year);
 
+        // reportLocation looks like => '..\reports\accounting-report-2018-05.txt'
         var reportLocation = Path.Combine(reportDirectory, reportFileName);
         
-        // reportLocation looks like => '..\reports\accounting-report-2018-05.txt'
-        return new ReportInfo(reportLocation, reportFileName);
+        if(File.Exists(reportLocation))
+            return ReportInfo.ExistingReportInfo(reportLocation, reportFileName);
+        
+        return ReportInfo.NewReportInfo(reportLocation, reportFileName);
     }
 
     private string ProvideReportDirectory(int year)

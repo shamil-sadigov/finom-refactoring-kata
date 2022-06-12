@@ -1,17 +1,15 @@
 ﻿namespace ReportService.Application.Report;
 
-/// <summary>
-/// Just an abstract Report.
-/// It can be a report stored in local file system, or in Redis, or in AWS S3 or somewhere else. 
-/// </summary>
-public abstract class Report
+public class Report
 {
-    protected Report(string fileName)
+    public Report(string fileName, string location)
     {
-        fileName.ThrowIfNull();
-        FileName = fileName;
-    }
+        ValidateArguments(fileName, location);
 
+        FileName = fileName;
+        _reportLocation = location;
+    }
+    
     /// <summary>
     /// Name and extension of report file
     /// TODO: It's better to make it ValueObject
@@ -19,7 +17,21 @@ public abstract class Report
     /// <example>somereport-2020.txt</example>
     public string FileName { get; }
     
-    public abstract Stream AsStream();
-    public abstract Task<byte[]> AsBytesAsync();
-    public abstract Task<string> AsTextAsync();
+    private readonly string _reportLocation;
+    
+    public Stream AsStream() => File.OpenRead(_reportLocation);
+    
+    public Task<string> AsTextAsync() => File.ReadAllTextAsync(_reportLocation);
+    
+    private static void ValidateArguments(string fileName, string location)
+    {
+        fileName.ThrowIfNull();
+        location.ThrowIfNull();
+
+        if (!Path.HasExtension(location))
+            throw new ArgumentException("Should have extensions", nameof(location));
+
+        if (!File.Exists(location))
+            throw new ArgumentException("Such report file doesn't exists", nameof(location));
+    }
 }
