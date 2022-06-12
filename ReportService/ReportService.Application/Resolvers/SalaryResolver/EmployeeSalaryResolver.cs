@@ -1,12 +1,12 @@
 ﻿using System.Net.Http.Json;
 
-namespace ReportService.Application.SalaryProvider
+namespace ReportService.Application.Resolvers.SalaryResolver
 {
-    public class EmployeeSalaryProvider : IEmployeeSalaryProvider
+    public class EmployeeSalaryResolver : IEmployeeSalaryResolver
     {
         private readonly HttpClient _httpClient;
 
-        public EmployeeSalaryProvider()
+        public EmployeeSalaryResolver()
         {
             // TODO: Extract uri to appsettings
             _httpClient = new HttpClient()

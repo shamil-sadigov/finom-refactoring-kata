@@ -1,6 +1,6 @@
-﻿namespace ReportService.Application.BuhCodeResolver;
+﻿namespace ReportService.Application.Resolvers.BuhCodeResolver;
 
-public class EmployeeCodeResolver:IEmployeeCodeResolver
+public class EmployeeBuhCodeResolver:IEmployeeBuhCodeResolver
 {
     // TODO: Есть предположение что на каждый inn будет всегда возвращаться один и тот же статичный Code 
     // поэтому стоит задуматься о кешировании

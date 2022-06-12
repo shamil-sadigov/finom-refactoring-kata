@@ -1,5 +1,5 @@
-﻿using ReportService.Application.BuhCodeResolver;
-using ReportService.Application.SalaryProvider;
+﻿using ReportService.Application.Resolvers.BuhCodeResolver;
+using ReportService.Application.Resolvers.SalaryResolver;
 
 namespace ReportService.Application;
 
@@ -7,15 +7,15 @@ namespace ReportService.Application;
 
 public sealed class EmployeeModelTransformation
 {
-    private readonly IEmployeeCodeResolver _employeeCodeResolver;
-    private readonly IEmployeeSalaryProvider _salaryProvider;
+    private readonly IEmployeeBuhCodeResolver _employeeBuhCodeResolver;
+    private readonly IEmployeeSalaryResolver _salaryResolver;
 
     public EmployeeModelTransformation(
-        IEmployeeCodeResolver employeeCodeResolver, 
-        IEmployeeSalaryProvider salaryProvider)
+        IEmployeeBuhCodeResolver employeeBuhCodeResolver, 
+        IEmployeeSalaryResolver salaryResolver)
     {
-        _employeeCodeResolver = employeeCodeResolver;
-        _salaryProvider = salaryProvider;
+        _employeeBuhCodeResolver = employeeBuhCodeResolver;
+        _salaryResolver = salaryResolver;
     }
         
     public Task<EmployeeReportItem[]> TransformToReportableItemsAsync(
@@ -37,7 +37,7 @@ public sealed class EmployeeModelTransformation
         EmployeeModel employee, 
         CancellationToken cancellationToken)
     {
-        var convertToReportableItemTask = _employeeCodeResolver
+        var convertToReportableItemTask = _employeeBuhCodeResolver
             .GetEmployeeBuhcodeAsync(employee.Inn, cancellationToken)
             .ContinueWith(async buhCodeResolverTask =>
             {
@@ -56,7 +56,7 @@ public sealed class EmployeeModelTransformation
                 // Это надо обусудить
                 
                 var employeeSalary =
-                    await _salaryProvider.GetSalaryAsync(employeeBuhCode, employee.Inn, cancellationToken);
+                    await _salaryResolver.GetSalaryAsync(employeeBuhCode, employee.Inn, cancellationToken);
 
                 return new EmployeeReportItem(employee.Name, employee.Inn, employee.Department, employeeSalary);
             }, cancellationToken).Unwrap();

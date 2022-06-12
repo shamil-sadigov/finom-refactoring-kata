@@ -4,8 +4,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using ReportService.Application;
-using ReportService.Application.BuhCodeResolver;
-using ReportService.Application.SalaryProvider;
+using ReportService.Application.Resolvers.BuhCodeResolver;
+using ReportService.Application.Resolvers.SalaryResolver;
 
 namespace ReportService.Api
 {
@@ -22,8 +22,8 @@ namespace ReportService.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
-            services.AddSingleton<IEmployeeSalaryProvider, EmployeeSalaryProvider>();
-            services.AddSingleton<IEmployeeCodeResolver, EmployeeCodeResolver>();
+            services.AddSingleton<IEmployeeSalaryResolver, EmployeeSalaryResolver>();
+            services.AddSingleton<IEmployeeBuhCodeResolver, EmployeeBuhCodeResolver>();
             services.AddSingleton<EmployeeModelTransformation>();
         }
 
