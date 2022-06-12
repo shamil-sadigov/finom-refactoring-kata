@@ -17,11 +17,11 @@ public class EmployeeRepository:IEmployeeRepository
     // и как следствие не известно какую стретегию ивалидации выбрать
     // Оставим как есть.
     
-    public async Task<IReadOnlyList<EmployeeModel>> GetAllAsync(CancellationToken cancellationToken)
+    public async Task<IReadOnlyList<EmployeeDataModel>> GetAllAsync(CancellationToken cancellationToken)
     {
         var dbConnection = await _dbConnectionFactory.GetOrCreateConnection();
         
-        var employees = await dbConnection.QueryAsync<EmployeeModel>(
+        var employees = await dbConnection.QueryAsync<EmployeeDataModel>(
             @"SELECT employees.name AS Name, 
                      employees.inn AS Inn, 
                      departments.name AS Department

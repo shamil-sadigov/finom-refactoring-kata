@@ -4,14 +4,14 @@ namespace ReportService.Tests.ReportService.Helpers;
 
 public class InMemoryRepository:IEmployeeRepository
 {
-    private readonly IReadOnlyList<EmployeeModel> _readOnlyList;
+    private readonly IReadOnlyList<EmployeeDataModel> _readOnlyList;
 
-    private InMemoryRepository(IReadOnlyList<EmployeeModel> readOnlyList) 
+    private InMemoryRepository(IReadOnlyList<EmployeeDataModel> readOnlyList) 
         => _readOnlyList = readOnlyList;
 
-    public Task<IReadOnlyList<EmployeeModel>> GetAllAsync(CancellationToken cancellationToken) 
+    public Task<IReadOnlyList<EmployeeDataModel>> GetAllAsync(CancellationToken cancellationToken) 
         => Task.FromResult(_readOnlyList);
 
-    public static InMemoryRepository WithCollection(IReadOnlyList<EmployeeModel> employeeModels) 
+    public static InMemoryRepository WithCollection(IReadOnlyList<EmployeeDataModel> employeeModels) 
         => new(employeeModels);
 }

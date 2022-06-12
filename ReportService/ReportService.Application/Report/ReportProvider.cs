@@ -39,7 +39,7 @@ public class ReportProvider : IReportProvider
         int month, 
         CancellationToken cancellationToken)
     {
-        IReadOnlyList<EmployeeModel> employees = 
+        IReadOnlyList<EmployeeDataModel> employees = 
             await _employeeRepository.GetAllAsync(cancellationToken);
 
         EmployeeReportItem[] employeeReportItems =

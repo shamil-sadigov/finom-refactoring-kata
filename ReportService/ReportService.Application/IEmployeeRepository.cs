@@ -2,5 +2,5 @@ namespace ReportService.Application;
 
 public interface IEmployeeRepository
 {
-    Task<IReadOnlyList<EmployeeModel>> GetAllAsync(CancellationToken cancellationToken);
+    Task<IReadOnlyList<EmployeeDataModel>> GetAllAsync(CancellationToken cancellationToken);
 }

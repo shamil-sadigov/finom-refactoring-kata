@@ -16,8 +16,8 @@ public static class EmployeeTestData
         new("Tim Berners Lee", "5", "IT", 8000),
     };
     
-    public static List<EmployeeModel> EmployeeDataModels { get; }
-        = EmployeesReportItems.Select(x => new EmployeeModel(x.Name, x.Inn, x.Department))
+    public static List<EmployeeDataModel> EmployeeDataModels { get; }
+        = EmployeesReportItems.Select(x => new EmployeeDataModel(x.Name, x.Inn, x.Department))
             .ToList();
 
     public static int GetSalaryByInn(string employeeInn)
