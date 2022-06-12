@@ -23,7 +23,7 @@ public class ReportProviderTests:IDisposable
     [Fact]
     public async Task Should_create_expected_report()
     {
-        // Arrang
+        // Arrange
         string expectedReport = await GetExpectedReportAsync();
         ReportProvider sut = CreateSut();
         

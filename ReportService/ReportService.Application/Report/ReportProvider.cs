@@ -2,8 +2,7 @@
 
 namespace ReportService.Application.Report;
 
-// TODO: Maybe it's worth to create abstraction
-public class ReportProvider
+public class ReportProvider : IReportProvider
 {
     private readonly EmployeeModelTransformation _employeeModelTransformation;
     private readonly IEmployeeRepository _employeeRepository;
@@ -21,8 +20,6 @@ public class ReportProvider
         _reportInfoProvider = reportInfoProvider;
         _reportWriter = reportWriter;
     }
-
-    // - Test when report is requested 2 times, then 2 time should not be calculated
     
     public async Task<Report> CreateReportAsync(int year, int month, CancellationToken cancellationToken)
     {
