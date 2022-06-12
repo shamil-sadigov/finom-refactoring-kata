@@ -6,50 +6,72 @@ using ReportService.Application.Report.Abstractions;
 using ReportService.Application.Resolvers.BuhCodeResolver;
 using ReportService.Application.Resolvers.SalaryResolver;
 using ReportService.Tests.ReportService.Helpers;
-using Xunit.Abstractions;
 
 namespace ReportService.Tests.ReportService;
 
 public class ReportProviderTests:IDisposable
 {
-    private readonly ITestOutputHelper _testOutputHelper;
-    private readonly IReportGenerator _reportGenerator;
     private readonly string _reportsRootDirectory;
 
-    public ReportProviderTests(ITestOutputHelper testOutputHelper)
+    public ReportProviderTests()
     {
-        _testOutputHelper = testOutputHelper;
         _reportsRootDirectory = Path.Combine(Directory.GetCurrentDirectory(), "reports");
 
         Directory.CreateDirectory(_reportsRootDirectory);
-        
-        _reportGenerator = new ReportGenerator(
-            new ReportInfoProvider(_reportsRootDirectory), 
-            new ReportWriter());
     }
     
     [Fact]
     public async Task Should_create_expected_report()
     {
-        // Arrange
-        var (employeeSalaryResolver, employeeBuhCodeResolver) = CreateMocks();
-        
-        var reportProvider = new ReportProvider(
-            _reportGenerator, 
-            new EmployeeModelTransformation(employeeBuhCodeResolver, employeeSalaryResolver),
-            InMemoryRepository.WithCollection(EmployeeTestData.EmployeeDataModels));
+        // Arrang
+        string expectedReport = await GetExpectedReportAsync();
+        ReportProvider sut = CreateSut();
         
         // Act
-        var report = await reportProvider.CreateReportAsync(2020, 10, CancellationToken.None);
+        Report report = await sut.CreateReportAsync(2020, 10, CancellationToken.None);
         
         // Assert
-        var expectedReport = await GetExpectedReportAsync();
-        var actualReport = await report.AsTextAsync();
+        string actualReportFromText = await report.AsTextAsync();
+        string actualReportFromStream = await new StreamReader(report.AsStream()).ReadToEndAsync();
         
-        actualReport.Should().Be(expectedReport);
+        actualReportFromText.Should().Be(expectedReport);
+        actualReportFromStream.Should().Be(expectedReport);
     }
     
+    [Theory]
+    [InlineData(2021, 08, 10)]
+    [InlineData(2020, 10, 20)]
+    [InlineData(2018, 05, 30)]
+    public async Task Should_return_previously_created_report(int year, int month, int reportRequestedTimes)
+    {
+        // Arrange
+        var reportWriterSpy = new ReportWriterSpyDecorator(new ReportWriter());
+        var reportProvider = CreateSut(reportWriterSpy);
 
+        // Act
+        for (int i = 0; i < reportRequestedTimes; i++)
+        {
+            Report report = await reportProvider.CreateReportAsync(year, month, CancellationToken.None);
+        }
+        
+        // Assert
+        reportWriterSpy.ReportGeneratedCount
+            .Should()
+            .Be(1, because: "We should not generate the same report more than once");
+    }
+    
+    // TODO: Extract it to builder object
+    private ReportProvider CreateSut(IReportWriter? reportWriter = null)
+    {
+        var (employeeSalaryResolver, employeeBuhCodeResolver) = CreateMocks();
+        
+        return new ReportProvider(
+            new EmployeeModelTransformation(employeeBuhCodeResolver, employeeSalaryResolver),
+            InMemoryRepository.WithCollection(EmployeeTestData.EmployeeDataModels),
+            new ReportInfoProvider(_reportsRootDirectory),
+            reportWriter ?? new ReportWriter());
+    }
+     
     private static (IEmployeeSalaryResolver, IEmployeeBuhCodeResolver) CreateMocks()
     {
         var salaryResolverMock = new Mock<IEmployeeSalaryResolver>();
@@ -65,17 +87,17 @@ public class ReportProviderTests:IDisposable
         
         return (salaryResolverMock.Object, buhCodeResolverMock.Object);
     }
-
-    public void Dispose()
-    {
-        if (Directory.Exists(_reportsRootDirectory)) 
-            Directory.Delete(_reportsRootDirectory, true);
-    }
     
     private static async Task<string> GetExpectedReportAsync()
     {
         var report = Path.Combine(Directory.GetCurrentDirectory(), "ReportService\\Expected_report.txt");
         var expectedReport = await File.ReadAllTextAsync(report);
         return expectedReport;
+    }
+    
+    public void Dispose()
+    {
+        if (Directory.Exists(_reportsRootDirectory)) 
+            Directory.Delete(_reportsRootDirectory, true);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace ReportService.Application.Report;
 
+// TODO: Maybe it's worth to create abstraction
 public class ReportProvider
 {
     private readonly EmployeeModelTransformation _employeeModelTransformation;
@@ -46,18 +47,20 @@ public class ReportProvider
 
         EmployeeReportItem[] employeeReportItems =
             await _employeeModelTransformation.TransformToReportableItemsAsync(employees, cancellationToken);
+
+        await using (var reportStream = File.CreateText(reportInfo.Location))
+        {
+            await _reportWriter.WriteAsync(reportStream, year, month, employeeReportItems);
+        }
         
-        await using var reportStream = File.CreateText(reportInfo.Location);
-        await _reportWriter.WriteAsync(reportStream, year, month, employeeReportItems);
-        
-        return new Report(reportInfo.Location, reportInfo.FileName);
+        return new Report(reportInfo.FileName, reportInfo.Location);
     }
 
     private static bool ReportWasAlreadyCreatedPreviously(ReportInfo reportInfo, out Report? localFileReport)
     {
         if (reportInfo.ReportExists)
         {
-            localFileReport = new Report(reportInfo.Location, reportInfo.FileName);
+            localFileReport = new Report(reportInfo.FileName, reportInfo.Location);
             return true;
         }
 
