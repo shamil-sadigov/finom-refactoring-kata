@@ -7,9 +7,8 @@ using Moq;
 using ReportService.Application;
 using ReportService.Application.Report;
 using ReportService.Application.Report.Abstractions;
-using ReportService.Application.Resolvers.BuhCodeResolver;
-using ReportService.Application.Resolvers.SalaryResolver;
-using ReportService.Tests.ReportService.Helpers;
+using ReportService.Application.Resolvers.Abstractions;
+using ReportService.Tests.ReportsProvider.Helpers;
 
 namespace ReportService.Tests.ReportsProvider;
 

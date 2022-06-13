@@ -1,4 +1,6 @@
-﻿namespace ReportService.Application.Resolvers.BuhCodeResolver;
+﻿using ReportService.Application.Resolvers.Abstractions;
+
+namespace ReportService.Application.Resolvers;
 
 public class EmployeeBuhCodeResolver:IEmployeeBuhCodeResolver
 {

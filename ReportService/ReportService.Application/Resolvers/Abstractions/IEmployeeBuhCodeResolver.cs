@@ -1,4 +1,4 @@
-﻿namespace ReportService.Application.Resolvers.BuhCodeResolver;
+﻿namespace ReportService.Application.Resolvers.Abstractions;
 
 public interface IEmployeeBuhCodeResolver
 {

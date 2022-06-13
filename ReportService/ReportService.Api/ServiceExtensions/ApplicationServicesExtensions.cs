@@ -5,8 +5,8 @@ using Microsoft.Extensions.DependencyInjection;
 using ReportService.Application;
 using ReportService.Application.Report;
 using ReportService.Application.Report.Abstractions;
-using ReportService.Application.Resolvers.BuhCodeResolver;
-using ReportService.Application.Resolvers.SalaryResolver;
+using ReportService.Application.Resolvers;
+using ReportService.Application.Resolvers.Abstractions;
 
 namespace ReportService.Api.ServiceExtensions;
 

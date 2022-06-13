@@ -1,8 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using ReportService.Application;
+﻿using ReportService.Application;
 
-namespace ReportService.Tests.ReportService.Helpers;
+namespace ReportService.Tests.ReportsProvider.Helpers;
 
 public static class EmployeeTestData
 {

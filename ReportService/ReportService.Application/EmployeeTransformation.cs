@@ -1,5 +1,4 @@
-﻿using ReportService.Application.Resolvers.BuhCodeResolver;
-using ReportService.Application.Resolvers.SalaryResolver;
+﻿using ReportService.Application.Resolvers.Abstractions;
 
 namespace ReportService.Application;
 

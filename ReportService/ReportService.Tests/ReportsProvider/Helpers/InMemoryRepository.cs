@@ -1,9 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using ReportService.Application;
+﻿using ReportService.Application;
 
-namespace ReportService.Tests.ReportService.Helpers;
+namespace ReportService.Tests.ReportsProvider.Helpers;
 
 public class InMemoryRepository:IEmployeeRepository
 {
