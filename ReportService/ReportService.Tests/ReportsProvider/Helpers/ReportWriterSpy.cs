@@ -6,13 +6,13 @@ using ReportService.Application.Report.Abstractions;
 
 namespace ReportService.Tests.ReportService.Helpers;
 
-public class ReportWriterSpyDecorator:IReportWriter
+public class ReportWriterSpy:IReportWriter
 {
     public int ReportGeneratedCount { get; private set; }
 
     private readonly IReportWriter _decoratee;
 
-    public ReportWriterSpyDecorator(IReportWriter decoratee)
+    public ReportWriterSpy(IReportWriter decoratee)
     {
         _decoratee = decoratee;
     }

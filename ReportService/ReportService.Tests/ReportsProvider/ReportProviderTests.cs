@@ -52,7 +52,7 @@ public class ReportProviderTests:IDisposable
     public async Task Should_return_previously_created_report(int year, int month, int reportRequestedTimes)
     {
         // Arrange
-        var reportWriterSpy = new ReportWriterSpyDecorator(new ReportWriter());
+        var reportWriterSpy = new ReportWriterSpy(new ReportWriter());
         var sut = CreateSut(reportWriterSpy);
 
         // Act
