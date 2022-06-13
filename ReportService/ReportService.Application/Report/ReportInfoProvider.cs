@@ -27,9 +27,9 @@ public class ReportInfoProvider : IReportInfoProvider
         var reportLocation = Path.Combine(reportDirectory, reportFileName);
         
         if(File.Exists(reportLocation))
-            return ReportInfo.ExistingReportInfo(reportLocation, reportFileName);
+            return ReportInfo.ForExistingReport(reportLocation, reportFileName);
         
-        return ReportInfo.NewReportInfo(reportLocation, reportFileName);
+        return ReportInfo.ForNewReport(reportLocation, reportFileName);
     }
 
     private string ProvideReportDirectory(int year)

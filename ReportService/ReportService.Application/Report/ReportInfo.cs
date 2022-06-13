@@ -16,9 +16,9 @@ public sealed class ReportInfo
     public FileName FileName { get; }
     public bool ReportExists { get; }
 
-    public static ReportInfo NewReportInfo(string location, string fileName) 
+    public static ReportInfo ForNewReport(string location, string fileName) 
         => new(location, fileName, reportExists: false);
 
-    public static ReportInfo ExistingReportInfo(string location, string fileName) => 
+    public static ReportInfo ForExistingReport(string location, string fileName) => 
         new(location, fileName, reportExists: true);
 }
